@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Select_tag</class>
+ <widget class="QDialog" name="Select_tag">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>535</width>
+    <height>463</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Select Tag</string>
+  </property>
+  <property name="modal">
+   <bool>true</bool>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0" colspan="2">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Select tag for ...</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Name Filter</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QComboBox" name="comboBoxPLCFilter">
+       <property name="currentText">
+        <string notr="true"/>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0" colspan="2">
+      <widget class="QCheckBox" name="checkBox">
+       <property name="text">
+        <string>Select Base Tag if possible</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string notr="true">PLC</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="lineEditNameFilter"/>
+     </item>
+     <item row="5" column="0" colspan="2">
+      <widget class="QTableView" name="tableView">
+       <property name="sortingEnabled">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="1">
+      <widget class="QDialogButtonBox" name="buttonBox">
+       <property name="standardButtons">
+        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+       </property>
+       <property name="centerButtons">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0" colspan="2">
+      <widget class="QLineEdit" name="lineEdit_2">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Type Filter</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QComboBox" name="comboBoxTypeFilter"/>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+ <slots>
+  <slot>NameFilterChanged()</slot>
+ </slots>
+</ui>

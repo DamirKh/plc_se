@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialog</class>
+ <widget class="QDialog" name="Dialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>580</width>
+    <height>227</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Add PLC</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="3" column="3">
+      <widget class="QPushButton" name="pushButton_2">
+       <property name="text">
+        <string>Check</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QLineEdit" name="lineEditSurname"/>
+     </item>
+     <item row="1" column="2">
+      <widget class="QLineEdit" name="lineEditL5X"/>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Connection path</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="3">
+      <widget class="QPushButton" name="pushButton">
+       <property name="text">
+        <string>Select</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>L5X File</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="2">
+      <widget class="QCheckBox" name="checkBox">
+       <property name="text">
+        <string>Copy File to project directory</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="2">
+      <widget class="QLineEdit" name="lineEditConnectionPath"/>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>PLC surname</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="4">
+      <widget class="QPushButton" name="pushButtonLoadPLCtags">
+       <property name="text">
+        <string>Load PLC tags</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="4">
+      <widget class="QPushButton" name="pushButtonLoadProgram">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>Load programm</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>Dialog</receiver>
+   <slot>ok_press()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>227</x>
+     <y>208</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>122</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>Dialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>295</x>
+     <y>214</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>122</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_2</sender>
+   <signal>clicked()</signal>
+   <receiver>Dialog</receiver>
+   <slot>CheckConnection()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>436</x>
+     <y>102</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>370</x>
+     <y>69</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>Dialog</receiver>
+   <slot>selectL5X()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>439</x>
+     <y>49</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>469</x>
+     <y>71</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonLoadProgram</sender>
+   <signal>clicked()</signal>
+   <receiver>Dialog</receiver>
+   <slot>LoadProgram()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>537</x>
+     <y>53</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>500</x>
+     <y>13</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonLoadPLCtags</sender>
+   <signal>clicked()</signal>
+   <receiver>Dialog</receiver>
+   <slot>LoadPLCtags()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>502</x>
+     <y>110</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>497</x>
+     <y>137</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>CheckConnection()</slot>
+  <slot>selectL5X()</slot>
+  <slot>ok_press()</slot>
+  <slot>LoadProgram()</slot>
+  <slot>LoadPLCtags()</slot>
+ </slots>
+</ui>
