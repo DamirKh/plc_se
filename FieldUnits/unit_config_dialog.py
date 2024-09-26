@@ -1,4 +1,5 @@
 import logging
+
 log = logging.getLogger(__name__)
 
 from PyQt6 import QtWidgets, QtGui
@@ -8,13 +9,15 @@ from PyQt6.QtWidgets import QDialog, QVBoxLayout, QTableWidget, QTableWidgetItem
 
 from .select_tag_dialog import SelectTagDialog
 
+
 class FieldUnitConfigDialog(QDialog):
     """Dialog for configuring field unit options."""
 
-    def __init__(self, kwargs, parent=None):
+    def __init__(self, settings_dict: dict, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Field Unit Configuration")
-        self._settings = kwargs
+        self._settings = settings_dict
+        # self._unit_name = kwargs.get("name", '')
         self.setupUi()
 
     def setupUi(self):
@@ -46,15 +49,13 @@ class FieldUnitConfigDialog(QDialog):
                 log.debug("Key hits IO")
                 select_tag_button = QPushButton(value)
                 select_tag_button.clicked.connect(
-                    lambda _, key=key: self.open_select_tag_dialog(key)
+                    lambda _, key=key: self.open_select_tag_dialog_button(key)
                 )
                 self.table_widget.setCellWidget(i, 1, select_tag_button)
                 pass
 
             else:
                 self.table_widget.setItem(i, 1, QTableWidgetItem(str(value)))
-
-
 
         # Connect cellChanged signal of the table widget
         self.table_widget.cellChanged.connect(self.on_cell_changed)
@@ -63,8 +64,8 @@ class FieldUnitConfigDialog(QDialog):
         self.table_widget.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
         # Make the Value column (column 1) stretch:
         header = self.table_widget.horizontalHeader()
-        header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeMode.ResizeToContents) # Key column
-        header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.Stretch)       # Value column
+        header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)  # Key column
+        header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.Stretch)  # Value column
 
         layout.addWidget(self.table_widget)
 
@@ -92,19 +93,27 @@ class FieldUnitConfigDialog(QDialog):
             self._settings[key] = color.name()
             button.setStyleSheet(f"background-color: {color.name()}")
 
-    def open_select_tag_dialog(self, key):
+    def open_select_tag_dialog_button(self, key):
         """opens the tag dialog and update button label"""
         button_index = list(self._settings.keys()).index((key))
         button: QPushButton = self.table_widget.cellWidget(button_index, 1)
+        current_tag = button.text()
 
         #get current label from button
         current_button_label = button.text()
 
         #create tag dialog
-        tag_dialog = SelectTagDialog(parent=self)
+        tag_dialog = SelectTagDialog(parent=self,
+                                     tag=key,
+                                     name=self._settings.get("name", ''),
+                                     current_tag=current_tag)
         if tag_dialog.exec():
-            log.debug("Select tag accepted")
-
+            tag = tag_dialog.lineEditSelectedTag.text()
+            self._settings[key] = tag
+            button.setText(tag)
+            log.info(f"Select tag {tag} accepted")
+        else:
+            log.debug("Selecting tag canceled")
 
     def on_cell_changed(self, row, column):
         """Handles changes in the table widget cells."""

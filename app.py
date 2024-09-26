@@ -63,8 +63,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.treeView.setModel(self.project_model)
 
-        # self.new_project_model()
-
     def connectSignalsSlots(self):
         self.actionExit.triggered.connect(self.close)
         self.actionAbout.triggered.connect(self.about)
@@ -169,7 +167,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     log.debug(f"PLC has data: {plc_obj}")
 
                     # --- Open the PLC Property Dialog ---
-                    dialog = PlcDialog(self, plc_obj)  # Or whatever your dialog class is called
+                    dialog = PlcDialog(self, plc_obj)
                     dialog.lineEditSurname.setEnabled(False)
 
                     result = dialog.exec()
@@ -177,14 +175,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         item.update_treeview_item()
                         self.ProjectChanged.emit(True, f"Changed PLC {dialog.plc}")
             case "Units":
-                print("This is a Unit")
+                log.debug(f"Hit Unit")
                 unit_config: dict = item.data(Qt.ItemDataRole.UserRole)
                 if unit_config:
                     log.debug(f"Unit has data: {unit_config}")
                     dialog = FieldUnitConfigDialog(unit_config)
                     result = dialog.exec()
                     if result:
-                        # item.
+                        log.debug(f"Accept config field unit dialog for {item.text()} from project tree view")
+                        item.setData(dialog._settings, Qt.ItemDataRole.UserRole)
+                        # field_item_settings: dict = item.data(Qt.ItemDataRole.UserRole)
+                        # field_item_settings.update(dialog._settings)
+                        # # Global project config  # TODO
+                        g.units[item.text()] = dialog._settings
+                        item.update_treeview_item()
                         pass
 
     def saveProject(self):
@@ -359,11 +363,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # self.status_bar_label_1.setText(f"{dialog.project_dir}")
         else:
             print("Reject")
-
-    # def set_plc_name(self, message):
-    #     self.statusBar().showMessage(f"{message}", 3000)
-    #     comm_path = g.l5x.controller.element.attrib['CommPath']
-    #     self.plc_name_label.setText(f"{g.l5x.doc.attrib['TargetName']} --> {comm_path}")
 
     def field_add_lamp(self):
         # Graphic object

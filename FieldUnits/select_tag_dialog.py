@@ -1,4 +1,5 @@
 import logging
+import re
 
 import pycomm3
 from PyQt6 import QtWidgets
@@ -30,13 +31,6 @@ class PandasTableModel(QAbstractTableModel):
 
     def columnCount(self, parent=QModelIndex()):
         return self._data.shape[1]
-
-    # def data(self, index, role=Qt.ItemDataRole.DisplayRole):
-    #     if role == Qt.ItemDataRole.DisplayRole:
-    #         row = index.row()
-    #         col = index.column()
-    #         return str(self._data.iloc[row, col])
-    #     return None
     def data(self, index, role=Qt.ItemDataRole.DisplayRole):
         if role == Qt.ItemDataRole.DisplayRole:
             row = index.row()
@@ -45,21 +39,18 @@ class PandasTableModel(QAbstractTableModel):
         return None
 
     def filterData(self, plc_filter, name_filter, type_filter):
-        # self._app.instance().setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
-
         filtered_data = self._original_data.copy()
 
-        if plc_filter:
-            filtered_data = filtered_data[filtered_data["plc_name"].str.contains(plc_filter, case=False)]
+        if plc_filter != "All":
+            filtered_data = filtered_data[filtered_data["plc_name"].str.contains(plc_filter)]
         if name_filter:
-            filtered_data = filtered_data[filtered_data["tag_name"].str.contains(name_filter, case=False)]
+            filtered_data = filtered_data[filtered_data["tag_name"].str.contains(name_filter, case=False, regex=False)]
         if type_filter != "All":
-            filtered_data = filtered_data[filtered_data["data_type_name"].str.contains(type_filter, case=False)]
+            filtered_data = filtered_data[filtered_data["data_type_name"].str.contains(type_filter)]
 
         self.beginResetModel()
         self._data = filtered_data
         self.endResetModel()
-        # self._app.instance().restoreOverrideCursor()
 
     def headerData(self, section, orientation, role=Qt.ItemDataRole.DisplayRole):
         if role == Qt.ItemDataRole.DisplayRole:
@@ -70,9 +61,11 @@ class PandasTableModel(QAbstractTableModel):
         return None
 
 class SelectTagDialog(QDialog, Ui_Select_tag):
-    def __init__(self, parent=None, tag=None):
+    def __init__(self, parent=None, tag=None, name=None, current_tag: str = ''):
         super().__init__(parent)
         self.setupUi(self)
+        _title = f"Select PLC Tag to connect to {name}.{tag}"
+        self.setWindowTitle(_title)
         self._app: QtWidgets.QApplication = QtWidgets.QApplication.instance()
         self._app.instance().setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
 
@@ -80,25 +73,46 @@ class SelectTagDialog(QDialog, Ui_Select_tag):
         for plc_name in g.plcs.keys():
             logix_tags_loader.load_cache(plc_name)
 
-        # self._model = PandasTableModel(data=logix_tags_loader.all_tags_df)
-        # self.tableView.setModel(self._model)
-        # if tag and isinstance(tag, str):
-        #     self.lineEditFilter.setText(tag)
-        # self.connectSignalsSlots()
-
-        # self._proxyModel = QSortFilterProxyModel()
         self._model = PandasTableModel(data=logix_tags_loader.all_tags_df)
-        # self._proxyModel.setSourceModel(self._model)
-        # self._proxyModel.setSortCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
         self.tableView.setModel(self._model)
-        if tag and isinstance(tag, str):
-            self.lineEditNameFilter.setText(tag)
 
         # Populate comboBoxTypeFilter (assuming 'data_type_name' is the column)
         unique_types = self._model._data["data_type_name"].unique()
         self.comboBoxTypeFilter.addItem("All")  # Add an "All" option
         self.comboBoxTypeFilter.addItems(unique_types)
 
+        # Populate comboBoxPLCFilter (assuming 'plc_name' is the column)
+        unique_types = self._model._data["plc_name"].unique()
+        self.comboBoxPLCFilter.addItem("All")  # Add an "All" option
+        self.comboBoxPLCFilter.addItems(unique_types)
+
+        if current_tag:
+            self.lineEditSelectedTag.setText((current_tag))
+            # Create boolean Series for each column
+            tag_name_match = self._model._data['tag_name'] == current_tag
+            plc_name_match = self._model._data['base_tag'] == current_tag
+
+            # Combine using logical OR (|)
+            combined_match = tag_name_match | plc_name_match
+
+            # Select rows based on the combined match
+            row = self._model._data.index[combined_match].tolist()
+
+            if row:  # If the tag is found
+                index = self._model.index(row[0], 0)  # Create a QModelIndex
+                # self.tableView.setCurrentIndex(index)  # Select the tag
+                self.tableView.selectRow(row[0])  # Select the entire row
+                self.tableView.scrollTo(index)       # Make the tag visible
+        else:
+            # preset filter
+            if name and isinstance(tag, str):
+                match = re.search(r'\d+', name)  # Search for one or more digits
+                if match:
+                    numbers = match.group(0)  # Get the matched digits
+                else:
+                    numbers = ""  # Set to empty string if no match
+                self.lineEditNameFilter.setText(numbers)
+                self.applyFilters()
         self.connectSignalsSlots()
         self._app.instance().restoreOverrideCursor()
 
@@ -114,5 +128,16 @@ class SelectTagDialog(QDialog, Ui_Select_tag):
         type_filter = self.comboBoxTypeFilter.currentText()
         self._model.filterData(plc_filter, name_filter, type_filter)
         self._app.instance().restoreOverrideCursor()
+
+    def onCellDblClick(self, index):
+        item = index.data()
+        self.lineEditSelectedTag.setText(item)
+
+    def onReset(self):
+        self.lineEditNameFilter.setText('')
+        self.comboBoxTypeFilter.setCurrentText('All')
+        self.comboBoxPLCFilter.setCurrentText('All')
+        self.applyFilters()
+
 
 

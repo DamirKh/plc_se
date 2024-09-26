@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>535</width>
-    <height>463</height>
+    <width>593</width>
+    <height>507</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Select Tag</string>
+   <string>Select PLC Tag</string>
   </property>
   <property name="modal">
    <bool>true</bool>
@@ -19,28 +19,21 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0" colspan="2">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Select tag for ...</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
+     <item row="1" column="0">
       <widget class="QLabel" name="label_3">
        <property name="text">
         <string>Name Filter</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
+     <item row="0" column="1">
       <widget class="QComboBox" name="comboBoxPLCFilter">
        <property name="currentText">
         <string notr="true"/>
        </property>
       </widget>
      </item>
-     <item row="4" column="0" colspan="2">
+     <item row="3" column="0" colspan="2">
       <widget class="QCheckBox" name="checkBox">
        <property name="text">
         <string>Select Base Tag if possible</string>
@@ -50,57 +43,130 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string notr="true">PLC</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QLineEdit" name="lineEditNameFilter"/>
-     </item>
-     <item row="5" column="0" colspan="2">
-      <widget class="QTableView" name="tableView">
-       <property name="sortingEnabled">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="1">
-      <widget class="QDialogButtonBox" name="buttonBox">
-       <property name="standardButtons">
-        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-       </property>
-       <property name="centerButtons">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="0" colspan="2">
-      <widget class="QLineEdit" name="lineEdit_2">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
+     <item row="2" column="0">
       <widget class="QLabel" name="label_4">
        <property name="text">
         <string>Type Filter</string>
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string notr="true">PLC</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="lineEditNameFilter"/>
+     </item>
+     <item row="4" column="0" colspan="2">
+      <widget class="QTableView" name="tableView">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="sortingEnabled">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1">
+      <widget class="QDialogButtonBox" name="buttonBox">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="standardButtons">
+        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok|QDialogButtonBox::Reset</set>
+       </property>
+       <property name="centerButtons">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
       <widget class="QComboBox" name="comboBoxTypeFilter"/>
+     </item>
+     <item row="5" column="0" colspan="2">
+      <widget class="QLineEdit" name="lineEditSelectedTag">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>tableView</sender>
+   <signal>doubleClicked(QModelIndex)</signal>
+   <receiver>Select_tag</receiver>
+   <slot>onCellDblClick()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>336</x>
+     <y>317</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>60</x>
+     <y>399</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>Select_tag</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>336</x>
+     <y>487</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>74</x>
+     <y>399</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>clicked(QAbstractButton*)</signal>
+   <receiver>Select_tag</receiver>
+   <slot>onReset()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>460</x>
+     <y>485</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>57</x>
+     <y>489</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>Select_tag</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>333</x>
+     <y>484</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>296</x>
+     <y>253</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
  <slots>
   <slot>NameFilterChanged()</slot>
+  <slot>onCellDblClick()</slot>
+  <slot>onReset()</slot>
  </slots>
 </ui>

@@ -1,5 +1,5 @@
 import logging
-from collections import UserDict
+from collections import OrderedDict
 
 log = logging.getLogger(__name__)
 
@@ -20,13 +20,6 @@ class Lamp(QGraphicsItem, BaseMovableGraphic):
         QGraphicsItem.__init__(self, parent)
         global lamp_counter
         lamp_counter += 1
-        # _init_lamp_config = {
-        #     'name': f'Lamp{lamp_counter:03d}',
-        #     'color_on': 'green',
-        #     'color_off': 'grey',
-        #     'io_in': ''
-        # }
-        # self._config = ConfigSaver(dict=_init_lamp_config)
         self._config = {
             'name': f'Lamp{lamp_counter:03d}',
             'color_on': 'green',

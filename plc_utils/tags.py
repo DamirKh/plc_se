@@ -48,7 +48,6 @@ class LogixTags(object):
         except (pickle.PickleError, EOFError, FileNotFoundError, FileExistsError, IsADirectoryError) as e:
             log.error(f"Cache file {cache_file} not saved: {e}")
 
-
     def load_cache(self, plc_name: str):
         """Loads the DataFrame from a cache file into self.all_tags_df"""
         cache_file = self._get_cache_file(plc_name)
@@ -90,55 +89,6 @@ class LogixTags(object):
         # Concatenate with the main DataFrame (outside the try...except block)
         self.all_tags_df = pd.concat([self.all_tags_df, plc_df], ignore_index=True)
 
-    # def add_driver(self, plc_name: str, new_driver: pycomm3.LogixDriver):
-    #     cache_file = os.path.join(self._cache_dir, f"{plc_name}_tags.pkl")
-    #
-    #     try:
-    #         if not new_driver.connected:
-    #             new_driver.open()
-    #
-    #         tags_data = []
-    #         for tag_name, tag_data in new_driver.tags.items():
-    #             tag_info = {'plc_name': plc_name, 'tag_name': tag_name}
-    #             for prop in self.TagDefinitionProperties:
-    #                 if prop in tag_data:
-    #                     tag_info[prop] = tag_data[prop]
-    #             tags_data.append(tag_info)
-    #
-    #         # Create a DataFrame for the current PLC
-    #         plc_df = pd.DataFrame(tags_data)
-    #
-    #         # Save DataFrame to cache file
-    #         try:
-    #             with open(cache_file, 'wb') as f:
-    #                 pickle.dump(plc_df, f)
-    #             log.debug(f"Cache file {cache_file} dumped")
-    #         except (pickle.PickleError, EOFError, FileNotFoundError, FileExistsError, IsADirectoryError) as e:
-    #             log.error(f"Cache file {cache_file} not saved")
-    #             log.debug(f"{e}")
-    #
-    #
-    #     except pycomm3.exceptions.CommError as e:
-    #         log.warning(f"Failed to connect to PLC '{plc_name}'. Attempting to load from cache.")
-    #         if os.path.exists(cache_file):
-    #             log.info(f"Loading tags for '{plc_name}' from cache file: {cache_file}")
-    #             try:
-    #                 with open(cache_file, 'rb') as f:
-    #                     plc_df = pickle.load(f)
-    #             except (pickle.PickleError, EOFError) as e:
-    #                 log.error(f"Error loading cache file: {e}. Skipping PLC '{plc_name}'.")
-    #                 return
-    #         else:
-    #             log.error(f"No cache file found for '{plc_name}'")
-    #             # raise e
-    #             return
-    #
-    #     # Concatenate with the main DataFrame (outside the try...except block)
-    #     self.all_tags_df = pd.concat([self.all_tags_df, plc_df], ignore_index=True)
-    #
-    #     if self.auto_close:
-    #         new_driver.close()
-
     def add_l5x(self, plc_name: str, l5x_file_name: str):
         prj = l5x.Project(l5x_file_name)
         project_name = prj.doc.attrib['TargetName']
@@ -163,6 +113,7 @@ class LogixTags(object):
             lambda row: base_tags.get(row['tag_name']) if row['plc_name'] == plc_name else None,
             axis=1
         )
+
 
 def __test__():
     lt = LogixTags()

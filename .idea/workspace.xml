@@ -5,46 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cf6dd84b-7254-4ec7-a58e-df2921a1f689" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.gitmodules" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/PLC_SE.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/FieldUnits/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/FieldUnits/base_components.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/FieldUnits/lamp/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/FieldUnits/lamp/lamp.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/FieldUnits/rslogix_components.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/FieldUnits/select_tag_dialog.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/FieldUnits/select_tag_dialog_ui.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/FieldUnits/unit_config_dialog.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/debug_widget.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/g.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/global_keys.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/interface/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/interface/base_tree_view_component.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/l5x" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/l5x_loader_thread.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/main_ui.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/new_project_dialog.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/new_project_dialog_ui.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/plc.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/plc_dialog_ui.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/plc_utils/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/plc_utils/tags.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/rebuild_ui.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/add_plc.ui" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/main.ui" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/new_project.ui" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/select_tag_dialog.ui" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/utilites/empty.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/utilites/writable.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FieldUnits/base_components.py" beforeDir="false" afterPath="$PROJECT_DIR$/FieldUnits/base_components.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FieldUnits/lamp/lamp.py" beforeDir="false" afterPath="$PROJECT_DIR$/FieldUnits/lamp/lamp.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FieldUnits/select_tag_dialog.py" beforeDir="false" afterPath="$PROJECT_DIR$/FieldUnits/select_tag_dialog.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FieldUnits/select_tag_dialog_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/FieldUnits/select_tag_dialog_ui.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FieldUnits/unit_config_dialog.py" beforeDir="false" afterPath="$PROJECT_DIR$/FieldUnits/unit_config_dialog.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plc.py" beforeDir="false" afterPath="$PROJECT_DIR$/plc.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plc_utils/tags.py" beforeDir="false" afterPath="$PROJECT_DIR$/plc_utils/tags.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rebuild_ui.sh" beforeDir="false" afterPath="$PROJECT_DIR$/rebuild_ui.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui/select_tag_dialog.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/select_tag_dialog.ui" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -86,6 +57,8 @@
   "keyToString": {
     "Python.app.executor": "Run",
     "Python.empty.executor": "Run",
+    "Python.form_tab_widget.executor": "Run",
+    "Python.helper.executor": "Run",
     "Python.main.executor": "Run",
     "Python.tags.executor": "Run",
     "Python.tmp.executor": "Run",
@@ -100,7 +73,7 @@
       <recent name="$PROJECT_DIR$/FieldUnits/lamp" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.app">
+  <component name="RunManager" selected="Python.helper">
     <configuration name="app" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="PLC_SE" />
       <option name="ENV_FILES" value="" />
@@ -123,7 +96,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="empty" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="form_tab_widget" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="PLC_SE" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -132,11 +105,33 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/utilites" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/comissioning_helper" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/utilites/empty.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/comissioning_helper/form_tab_widget.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="helper" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="PLC_SE" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/comissioning_helper" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/comissioning_helper/helper.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -213,10 +208,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.helper" />
+        <item itemvalue="Python.form_tab_widget" />
         <item itemvalue="Python.app" />
         <item itemvalue="Python.tmp" />
         <item itemvalue="Python.tags" />
-        <item itemvalue="Python.empty" />
       </list>
     </recent_temporary>
   </component>
@@ -253,18 +249,13 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/FieldUnits/lamp/lamp.py</url>
-          <line>28</line>
-          <option name="timeStamp" value="14" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/app.py</url>
-          <line>96</line>
+          <line>94</line>
           <option name="timeStamp" value="15" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/tmp.py</url>
-          <line>6</line>
+          <line>20</line>
           <option name="timeStamp" value="19" />
         </line-breakpoint>
       </breakpoints>

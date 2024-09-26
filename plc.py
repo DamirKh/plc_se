@@ -86,6 +86,7 @@ class PlcDialog(QDialog, Ui_Dialog):
         if plc and isinstance(plc, Plc):
             self.plc = plc
             self.checkBox.setEnabled(False)  # if PLC object already exist "Copy..." checkbox disabled
+            self.checkBox.setChecked(False)
             self.setWindowTitle("Edit PLC property")
         else:
             self.plc = Plc()

@@ -28,14 +28,14 @@ class FieldUnitMenuButton(QGraphicsProxyWidget):
 
     def onclick(self):
         # print("Click on button")
-        dialog = FieldUnitConfigDialog(self._kwargs)  # Create the dialog
+        dialog = FieldUnitConfigDialog(self._kwargs)
         if dialog.exec() == QDialog.DialogCode.Accepted:
             self.update_kwargs_from_table(dialog._settings)
 
     def update_kwargs_from_table(self, settings_dict: dict):
         _kwargs = {}  # Clear existing kwargs
         _kwargs.update(settings_dict)
-        print("Updated kwargs:", _kwargs)  # For debugging
+        log.debug(f"Updated kwargs: {_kwargs}")
         self.SettingsUpdated.emit(_kwargs)  # Emit the signal
 
 
