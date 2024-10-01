@@ -4,18 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cf6dd84b-7254-4ec7-a58e-df2921a1f689" name="Changes" comment="">
+    <list default="true" id="cf6dd84b-7254-4ec7-a58e-df2921a1f689" name="Changes" comment="work in progress">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FieldUnits/base_components.py" beforeDir="false" afterPath="$PROJECT_DIR$/FieldUnits/base_components.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FieldUnits/lamp/lamp.py" beforeDir="false" afterPath="$PROJECT_DIR$/FieldUnits/lamp/lamp.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FieldUnits/select_tag_dialog.py" beforeDir="false" afterPath="$PROJECT_DIR$/FieldUnits/select_tag_dialog.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FieldUnits/select_tag_dialog_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/FieldUnits/select_tag_dialog_ui.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FieldUnits/unit_config_dialog.py" beforeDir="false" afterPath="$PROJECT_DIR$/FieldUnits/unit_config_dialog.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plc.py" beforeDir="false" afterPath="$PROJECT_DIR$/plc.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plc_utils/tags.py" beforeDir="false" afterPath="$PROJECT_DIR$/plc_utils/tags.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rebuild_ui.sh" beforeDir="false" afterPath="$PROJECT_DIR$/rebuild_ui.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ui/select_tag_dialog.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/select_tag_dialog.ui" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,20 +43,20 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.app.executor": "Run",
-    "Python.empty.executor": "Run",
-    "Python.form_tab_widget.executor": "Run",
-    "Python.helper.executor": "Run",
-    "Python.main.executor": "Run",
-    "Python.tags.executor": "Run",
-    "Python.tmp.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master",
-    "settings.editor.selected.configurable": "advanced.settings"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.app.executor&quot;: &quot;Run&quot;,
+    &quot;Python.empty.executor&quot;: &quot;Run&quot;,
+    &quot;Python.form_tab_widget.executor&quot;: &quot;Run&quot;,
+    &quot;Python.helper.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.tags.executor&quot;: &quot;Run&quot;,
+    &quot;Python.tmp.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;advanced.settings&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/FieldUnits" />
@@ -232,6 +222,15 @@
       <option name="presentableId" value="Default" />
       <updated>1726471617337</updated>
     </task>
+    <task id="LOCAL-00001" summary="work in progress">
+      <option name="closed" value="true" />
+      <created>1727385139679</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1727385139679</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -244,6 +243,10 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="work in progress" />
+    <option name="LAST_COMMIT_MESSAGE" value="work in progress" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
