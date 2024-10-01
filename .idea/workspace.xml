@@ -4,8 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cf6dd84b-7254-4ec7-a58e-df2921a1f689" name="Changes" comment="work in progress">
+    <list default="true" id="cf6dd84b-7254-4ec7-a58e-df2921a1f689" name="Changes" comment="CH work in progress">
+      <change afterPath="$PROJECT_DIR$/comissioning_helper/Plc_connection_worker.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/comissioning_helper/helper_globals.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/comissioning_helper/form_tab2_widget_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/comissioning_helper/form_tab2_widget_ui.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/comissioning_helper/form_tab_widget.py" beforeDir="false" afterPath="$PROJECT_DIR$/comissioning_helper/form_tab_widget.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/comissioning_helper/helper.py" beforeDir="false" afterPath="$PROJECT_DIR$/comissioning_helper/helper.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui/FormTab2.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/FormTab2.ui" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,20 +49,20 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.app.executor&quot;: &quot;Run&quot;,
-    &quot;Python.empty.executor&quot;: &quot;Run&quot;,
-    &quot;Python.form_tab_widget.executor&quot;: &quot;Run&quot;,
-    &quot;Python.helper.executor&quot;: &quot;Run&quot;,
-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
-    &quot;Python.tags.executor&quot;: &quot;Run&quot;,
-    &quot;Python.tmp.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;advanced.settings&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.app.executor": "Run",
+    "Python.empty.executor": "Run",
+    "Python.form_tab_widget.executor": "Run",
+    "Python.helper.executor": "Run",
+    "Python.main.executor": "Run",
+    "Python.tags.executor": "Run",
+    "Python.tmp.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "master",
+    "settings.editor.selected.configurable": "advanced.settings"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/FieldUnits" />
@@ -199,9 +205,9 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.helper" />
+        <item itemvalue="Python.tmp" />
         <item itemvalue="Python.form_tab_widget" />
         <item itemvalue="Python.app" />
-        <item itemvalue="Python.tmp" />
         <item itemvalue="Python.tags" />
       </list>
     </recent_temporary>
@@ -230,7 +236,15 @@
       <option name="project" value="LOCAL" />
       <updated>1727385139679</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="CH work in progress">
+      <option name="closed" value="true" />
+      <created>1727757166030</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1727757166030</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -246,7 +260,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="work in progress" />
-    <option name="LAST_COMMIT_MESSAGE" value="work in progress" />
+    <MESSAGE value="CH work in progress" />
+    <option name="LAST_COMMIT_MESSAGE" value="CH work in progress" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -260,6 +275,11 @@
           <url>file://$PROJECT_DIR$/tmp.py</url>
           <line>20</line>
           <option name="timeStamp" value="19" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/comissioning_helper/form_tab_widget.py</url>
+          <line>174</line>
+          <option name="timeStamp" value="26" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

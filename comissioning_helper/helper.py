@@ -1,61 +1,34 @@
 import logging
 import sys
+import time
 
 from PyQt6 import QtWidgets, QtCore
-from PyQt6.QtCore import pyqtSignal, Qt, QThread
+from PyQt6.QtCore import pyqtSignal, Qt, QThread, QObject, QMutex
 from PyQt6.QtGui import QStandardItemModel, QStandardItem
 from PyQt6.QtWidgets import QMainWindow, QApplication, QProgressDialog, QVBoxLayout, QMessageBox
 from pycomm3 import LogixDriver, ResponseError, RequestError, CommError
 
 from helper_window_ui import Ui_MainWindow
 from form_tab_widget import FormTabWidget
+from Plc_connection_worker import PLCConnectionWorkerReader, PLCConnectionWorkerWriter
 
-driver = None
-
-
-class PLCConnectionWorker(QThread):
-    finished = pyqtSignal(bool, str, str)  # Success (bool), Message (str)
-
-    def __init__(self, path):
-        super().__init__()
-        self.path = path
-
-    def run(self):
-        try:
-            global driver
-            driver = LogixDriver(self.path)
-            driver.open()
-            log.info(f"Connected to {self.path}")
-            plc_name = driver.get_plc_name()
-            plc_info = driver.get_plc_info()
-            # print(tmp_driver.get_plc_info())
-            formatted_info = f"""
-            Vendor: {plc_info['vendor']}
-            Product Type: {plc_info['product_type']}
-            Product Code: {plc_info['product_code']}
-            Product Name: {plc_info['product_name']}
-            Revision: {plc_info['revision']['major']}.{plc_info['revision']['minor']}
-            Serial: {plc_info['serial']}
-            Keyswitch: {plc_info['keyswitch']}
-            """
-
-            self.finished.emit(True, f"PLC Name: {plc_name}\n{formatted_info}", plc_name)
-        except (ResponseError, RequestError, CommError, ConnectionError) as e:
-            self.finished.emit(False, f"Connection error: {e}", "Error")
-
+# driver = None
+import helper_globals
 
 class HelperWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, data, parent=None):
         super().__init__(parent)
         self.setupUi(self)
         self.connectSignalsSlots()
+        self.reader_mutex = QMutex()
+        self.writer_mutex = QMutex()
         # self.onAddTab()
 
     def connectSignalsSlots(self):
-        self.pushButtonConnect.clicked.connect(self.onConnect)
+        self.pushButtonConnect.clicked.connect(self.onButtonConnect)
         self.pushButtonAddTab.clicked.connect(self.onAddTab)
 
-    def onConnect(self):
+    def onButtonConnect(self):
         _path = self.lineEditConnectionPath.text()
         # _name = self.lineEditSurname.text()
 
@@ -64,18 +37,24 @@ class HelperWindow(QMainWindow, Ui_MainWindow):
         self.progress_dialog.setCancelButton(None)  # Disable the cancel button
         self.progress_dialog.show()
 
-        self.worker = PLCConnectionWorker(_path)
-        self.worker.finished.connect(self.on_connection_check_finished)
-        self.worker.start()
+        self.read_worker = PLCConnectionWorkerReader(_path, self.reader_mutex)
+        self.read_worker.signals.connected.connect(self.on_connection_check_connected)
+        self.read_worker.start()
 
-    def on_connection_check_finished(self, success, long_string, name):
+    def on_connection_check_connected(self, success, long_string, name):
         self.progress_dialog.hide()
         self.labelProjectName.setText(name)
         if success:
             QMessageBox.information(self, "Success", long_string)
             self.pushButtonAddTab.setEnabled(True)
+            self.writer_worker = PLCConnectionWorkerWriter(self.lineEditConnectionPath.text(), self.writer_mutex)
+            # self.writer_worker.signals.connected.connect(self.on_writer_connected)
+            if self.writer_worker._connected:
+                self.writer_worker.start()
         else:
+            self.progress_dialog.hide()
             QMessageBox.warning(self, f"Error connecting to PLC", long_string)
+
 
     def onAddTab(self):
         tab_name = self.lineEdit_2.text() or "Unnamed"
@@ -86,7 +65,7 @@ class HelperWindow(QMainWindow, Ui_MainWindow):
         self.tabWidget.addTab(new_tab, tab_name)
 
         # Create an instance of your FormTabWidget
-        form_tab_widget = FormTabWidget(driver)
+        form_tab_widget = FormTabWidget(reader=self.read_worker, r_mutex=self.reader_mutex, writer=self.writer_worker, w_mutex=self.writer_mutex)
 
         # Create a layout for the new tab and add the FormTabWidget
         layout = QVBoxLayout()
