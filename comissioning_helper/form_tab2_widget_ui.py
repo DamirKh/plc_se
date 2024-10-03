@@ -20,9 +20,6 @@ class Ui_FormTabWidget(object):
         self.tableView = QtWidgets.QTableView(parent=FormTabWidget)
         self.tableView.setObjectName("tableView")
         self.gridLayout.addWidget(self.tableView, 0, 0, 1, 1)
-        self.radioButtonRead = QtWidgets.QRadioButton(parent=FormTabWidget)
-        self.radioButtonRead.setObjectName("radioButtonRead")
-        self.gridLayout.addWidget(self.radioButtonRead, 2, 0, 1, 1)
         self.pushButtonPlusColumn = QtWidgets.QPushButton(parent=FormTabWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Preferred)
         sizePolicy.setHorizontalStretch(0)
@@ -37,6 +34,9 @@ class Ui_FormTabWidget(object):
         self.pushButtonPlusRow = QtWidgets.QPushButton(parent=FormTabWidget)
         self.pushButtonPlusRow.setObjectName("pushButtonPlusRow")
         self.gridLayout.addWidget(self.pushButtonPlusRow, 1, 0, 1, 1)
+        self.checkBoxRead = QtWidgets.QCheckBox(parent=FormTabWidget)
+        self.checkBoxRead.setObjectName("checkBoxRead")
+        self.gridLayout.addWidget(self.checkBoxRead, 2, 0, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout)
 
         self.retranslateUi(FormTabWidget)
@@ -45,5 +45,5 @@ class Ui_FormTabWidget(object):
     def retranslateUi(self, FormTabWidget):
         _translate = QtCore.QCoreApplication.translate
         FormTabWidget.setWindowTitle(_translate("FormTabWidget", "Form"))
-        self.radioButtonRead.setText(_translate("FormTabWidget", "Read Periodicaly"))
         self.pushButtonPlusRow.setText(_translate("FormTabWidget", "Add row"))
+        self.checkBoxRead.setText(_translate("FormTabWidget", "Read Periodicaly"))

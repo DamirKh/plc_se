@@ -50,7 +50,7 @@ class PLCConnectionWorkerReader(QThread):
             self.signals.connected.emit(True, f"PLC Name: {plc_name}\n{formatted_info}", plc_name)
 
             while self._connected:
-                time.sleep(1)
+                time.sleep(0.05)
                 self.mutex.lock()
                 _now_reading = self._read_tags_q.copy()
                 self._read_tags_q = []
@@ -119,7 +119,7 @@ class PLCConnectionWorkerWriter(QThread):
     def run(self):
         try:
             while self._connected:
-                time.sleep(0.1)
+                time.sleep(0.07)
                 self.mutex.lock()
                 _now_writing = self._write_tags_q.copy()
                 self._write_tags_q = []
@@ -127,7 +127,7 @@ class PLCConnectionWorkerWriter(QThread):
                 if not len(_now_writing):
                     continue
                 try:
-                    _now_tags = self.driver.write(*_now_writing) ##   convert with emit
+                    _now_tags = self.driver.write(*_now_writing)
                 except ConnectionError as e:
                     log.error(f"Connection error: {e}")
                     self._connected = False

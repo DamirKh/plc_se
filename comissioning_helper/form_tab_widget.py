@@ -1,3 +1,5 @@
+import logging
+log = logging.getLogger(__name__)
 import pandas as pd
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtCore import Qt, QMutex
@@ -17,7 +19,7 @@ class TableModel(QtCore.QAbstractTableModel):
         super().__init__()
         self._data: pd.DataFrame = data
 
-    def flags(self, index):
+    def flags(self, index) -> Qt.ItemFlag:
         """Set flags for editable items."""
         # print(index.column())
         _flags = QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled
@@ -32,7 +34,7 @@ class TableModel(QtCore.QAbstractTableModel):
         # Get a list of tag names, excluding empty ones
         return [tag for tag in self._data['Tag Name'] if tag]
 
-    def get_tag_value(self, column_index):
+    def get_tag_value_pairs(self, column_index):
         """
         Gets a list of (tag_name, value) pairs for the specified column,
         excluding pairs where either the tag name or value is empty.
@@ -50,10 +52,15 @@ class TableModel(QtCore.QAbstractTableModel):
 
             # Check if both tag_name and value are non-empty
             if tag_name and value:
-                tag_value_pairs.extend((tag_name, value))
+                try:
+                    value = eval(value)
+                except:
+                    log.error()
+                    continue
+                tag_value_pairs.append((tag_name, value))
         return tag_value_pairs
 
-    def set_current_value(self, tag_dict: dict):
+    def set_current_values(self, tag_dict: dict):
         for tag_name, tag_value in tag_dict.items():
             # Find matching tag names (can be multiple matches)
             matching_rows = self._data.index[
@@ -62,7 +69,7 @@ class TableModel(QtCore.QAbstractTableModel):
 
             # Set the 'Current Value' for all matching rows
             for row in matching_rows:
-                self._data.loc[row, 'Current Value'] = str(tag_value)
+                self._data.loc[row, 'Read'] = str(tag_value)
 
         # Emit dataChanged signal for the entire column
         top_left = self.index(0, 1)  # Row 0, Column 1 ('Current Value')
@@ -72,7 +79,7 @@ class TableModel(QtCore.QAbstractTableModel):
         self.dataChanged.emit(top_left, bottom_right)
 
     def data(self, index, role):
-        if role == Qt.ItemDataRole.DisplayRole:
+        if role in (Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole):
             value = self._data.iloc[index.row(), index.column()]
             return str(value)
         if role == Qt.ItemDataRole.DecorationRole:
@@ -108,7 +115,7 @@ class TableModel(QtCore.QAbstractTableModel):
     def add_new_column(self, index=None):
         if index is None:
             index = self.columnCount(QtCore.QModelIndex())
-        new_column_name = f"Set variant {index}"
+        new_column_name = f"Set {index-2}"
         self._data.insert(index, new_column_name, "")
         self.layoutChanged.emit()
 
@@ -122,8 +129,8 @@ class FormTabWidget(QtWidgets.QWidget, Ui_FormTabWidget):
     empty_row_data = ['', '', '']
     new_table_columns = [
         'Tag Name',
-        'Current Value',
-        'Set Value',
+        'Read',
+        'Set',
     ]
 
     def __init__(self, reader: PLCConnectionWorkerReader, r_mutex: QMutex, writer: PLCConnectionWorkerWriter=None, w_mutex: QMutex = None, data=None):
@@ -157,12 +164,13 @@ class FormTabWidget(QtWidgets.QWidget, Ui_FormTabWidget):
     def connectSignalsSlots(self):
         self.pushButtonPlusColumn.clicked.connect(self.add_new_column)
         self.pushButtonPlusRow.clicked.connect(self.add_new_row)
+        # self.checkBoxRead.  help me here
 
     def on_header_clicked(self, logicalIndex):
         """Handle clicks on header labels."""
         match logicalIndex:
             case 0:
-                print(f"Clicked header label for column: 0")
+                print(f"Clicked on Tag Name")
             case 1:
                 print(f"Read data")
                 self.upload_table_from_PLC()
@@ -172,7 +180,7 @@ class FormTabWidget(QtWidgets.QWidget, Ui_FormTabWidget):
 
     def download_to_plc(self, logical_index):
         if self.writer:
-            tags_to_write = self.model.get_tag_value(logical_index)
+            tags_to_write = self.model.get_tag_value_pairs(logical_index)
             self.w_mutex.lock()
             self.writer.write_tags_append(tags_to_write)
             self.w_mutex.unlock()
@@ -194,7 +202,7 @@ class FormTabWidget(QtWidgets.QWidget, Ui_FormTabWidget):
         self.r_mutex.unlock()
 
     def update_from_reader(self, tags_dict):
-        self.model.set_current_value(tags_dict)
+        self.model.set_current_values(tags_dict)
 
     def send_data(self):
         self.update_data_from_table()
