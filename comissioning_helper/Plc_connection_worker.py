@@ -1,3 +1,4 @@
+import datetime
 import logging
 import time
 
@@ -17,6 +18,7 @@ class PLCConnectionWorkerSignals(QObject):
     read_done = pyqtSignal(dict)
     write_done = pyqtSignal(dict)
     lost_connection = pyqtSignal(str)
+    current_time = pyqtSignal(datetime.datetime)
 
 
 class PLCConnectionWorkerReader(QThread):
@@ -48,10 +50,17 @@ class PLCConnectionWorkerReader(QThread):
             """
             self._connected = True
             self.signals.connected.emit(True, f"PLC Name: {plc_name}\n{formatted_info}", plc_name)
+            prev_seconds = 0
 
             while self._connected:
                 time.sleep(0.05)
+                current_seconds = int(time.time())
                 self.mutex.lock()
+                if current_seconds != prev_seconds:
+                    # print('.', end='')
+                    plc_time = self.driver.get_plc_time()
+                    prev_seconds = current_seconds
+                    self.signals.current_time.emit(plc_time.value['datetime'])
                 _now_reading = self._read_tags_q.copy()
                 self._read_tags_q = []
                 self.mutex.unlock()

@@ -119,5 +119,25 @@
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>tabWidget</sender>
+   <signal>currentChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>tab_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>450</x>
+     <y>233</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>541</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>tab_changed()</slot>
+ </slots>
 </ui>

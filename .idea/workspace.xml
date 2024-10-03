@@ -4,12 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cf6dd84b-7254-4ec7-a58e-df2921a1f689" name="Changes" comment="CH work in progress 2">
+    <list default="true" id="cf6dd84b-7254-4ec7-a58e-df2921a1f689" name="Changes" comment="CH work in progress 3">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/comissioning_helper/Plc_connection_worker.py" beforeDir="false" afterPath="$PROJECT_DIR$/comissioning_helper/Plc_connection_worker.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/comissioning_helper/form_tab2_widget_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/comissioning_helper/form_tab2_widget_ui.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/comissioning_helper/form_tab_widget.py" beforeDir="false" afterPath="$PROJECT_DIR$/comissioning_helper/form_tab_widget.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ui/FormTab2.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/FormTab2.ui" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/comissioning_helper/helper.py" beforeDir="false" afterPath="$PROJECT_DIR$/comissioning_helper/helper.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/comissioning_helper/helper_window_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/comissioning_helper/helper_window_ui.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui/commisionning_helper.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/commisionning_helper.ui" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -250,7 +251,15 @@
       <option name="project" value="LOCAL" />
       <updated>1727792057418</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="CH work in progress 3">
+      <option name="closed" value="true" />
+      <created>1727930102056</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1727930102056</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -268,7 +277,8 @@
     <MESSAGE value="work in progress" />
     <MESSAGE value="CH work in progress" />
     <MESSAGE value="CH work in progress 2" />
-    <option name="LAST_COMMIT_MESSAGE" value="CH work in progress 2" />
+    <MESSAGE value="CH work in progress 3" />
+    <option name="LAST_COMMIT_MESSAGE" value="CH work in progress 3" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -282,6 +292,16 @@
           <url>file://$PROJECT_DIR$/tmp.py</url>
           <line>20</line>
           <option name="timeStamp" value="19" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/comissioning_helper/form_tab_widget.py</url>
+          <line>63</line>
+          <option name="timeStamp" value="22" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/comissioning_helper/helper.py</url>
+          <line>96</line>
+          <option name="timeStamp" value="25" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

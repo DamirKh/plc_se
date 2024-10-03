@@ -2,7 +2,7 @@ import logging
 log = logging.getLogger(__name__)
 import pandas as pd
 from PyQt6 import QtCore, QtGui, QtWidgets
-from PyQt6.QtCore import Qt, QMutex
+from PyQt6.QtCore import Qt, QMutex, QTimer
 from PyQt6.QtWidgets import QApplication, QPushButton, QSizePolicy, QHeaderView
 import sys
 
@@ -158,13 +158,37 @@ class FormTabWidget(QtWidgets.QWidget, Ui_FormTabWidget):
 
         self.model = TableModel(data)
         self.tableView.setModel(self.model)
+        self._visible = False
 
         self.connectSignalsSlots()
 
     def connectSignalsSlots(self):
         self.pushButtonPlusColumn.clicked.connect(self.add_new_column)
         self.pushButtonPlusRow.clicked.connect(self.add_new_row)
-        # self.checkBoxRead.  help me here
+        self.checkBoxRead.stateChanged.connect(self.on_checkbox_checked)
+
+        # Create a timer for periodic updates
+        self.update_timer = QTimer(self)
+        self.update_timer.setInterval(1000)  # Update every 1000ms (1 second)
+        self.update_timer.timeout.connect(self.upload_table_from_PLC)
+
+    def you_are_visible(self, visible):
+        self._visible = visible
+        if visible:
+            print("I'm visible")
+            self.on_checkbox_checked(self.checkBoxRead.checkState().value)
+        else:
+            self.on_checkbox_checked(QtCore.Qt.CheckState.Unchecked.value)
+
+    def on_checkbox_checked(self, state):
+        if state == QtCore.Qt.CheckState.Checked.value:
+            log.debug("Start periodicaly reading")
+            print("Start periodicaly reading")
+            self.update_timer.start()  # Start the timer when checked
+        else:
+            log.debug("Stop periodicaly reading")
+            print("Stop periodicaly reading")
+            self.update_timer.stop()   # Stop the timer when unchecked
 
     def on_header_clicked(self, logicalIndex):
         """Handle clicks on header labels."""
@@ -202,23 +226,9 @@ class FormTabWidget(QtWidgets.QWidget, Ui_FormTabWidget):
         self.r_mutex.unlock()
 
     def update_from_reader(self, tags_dict):
+        if not self._visible:
+            return
         self.model.set_current_values(tags_dict)
-
-    def send_data(self):
-        self.update_data_from_table()
-        for row in range(len(self.data)):
-            tag_name = self.data[row]['Tag Name']
-            if not tag_name:
-                continue
-            value = self.data[row]['Set Value']
-            if not value:
-                continue
-            tag = self.driver.write(tag_name, eval(value))
-            if tag:
-                continue
-            else:
-                self.data[row]['Current Value'] = '-'
-        self.populate_table(self.data)
 
 
 if __name__ == "__main__":
