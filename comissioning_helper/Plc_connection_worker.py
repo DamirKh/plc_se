@@ -31,7 +31,18 @@ class PLCConnectionWorker(QThread):
         self._read_tags_q = []
         self._write_tags_q = []
         self._connected = False
-        self._write_enabled = True
+        self._write_enabled = False
+
+    @property
+    def enable_writing(self):
+        return self._write_enabled
+
+    @enable_writing.setter
+    def enable_writing(self, enable: bool):
+        self.mutex.lock()
+        self._write_tags_q = []  # drop write query
+        self._write_enabled = enable
+        self.mutex.unlock()
 
     @property
     def connected(self):
@@ -170,71 +181,3 @@ class PLCConnectionWorker(QThread):
         self.mutex.lock()
         self._write_tags_q.extend(list_of_tags)
         self.mutex.unlock()
-
-
-class PLCConnectionWorkerWriter(QThread):
-    def __init__(self, path, mutex):
-        super().__init__()
-        self.path = path
-        self.mutex: QMutex = mutex  # this is an external mutex
-        self.signals = PLCConnectionWorkerSignals()
-        self._write_tags_q = []
-        self._connected = False
-        self._open_driver()
-        print(f"Writer init complete")
-
-    def _open_driver(self):
-        try:
-            self.driver = LogixDriver(self.path)
-            self.driver.open()
-            log.info(f"Writer Connected to {self.path}")
-            self._connected = True
-            self.signals.connected.emit(True, f"Writer connected to : {self.path}", "")
-
-        except (ResponseError, RequestError, CommError, ConnectionError) as e:
-            self._connected = False
-            self.signals.connected.emit(False, f"Connection error: {e}", "Error")
-
-    def run(self):
-        try:
-            while self._connected:
-                time.sleep(0.07)
-                self.mutex.lock()
-                _now_writing = self._write_tags_q.copy()
-                self._write_tags_q = []
-                self.mutex.unlock()
-                if not len(_now_writing):
-                    continue
-                try:
-                    _now_tags = self.driver.write(*_now_writing)
-                except ConnectionError as e:
-                    log.error(f"Connection error: {e}")
-                    self._connected = False
-                    self.signals.lost_connection.emit()
-                    return
-                log.debug(f"Write {len(_now_tags)} tags")
-                _temporary_dict = {}
-                if isinstance(_now_tags, pycomm3.Tag):
-                    _now_tag_list = [_now_tags, ]
-                else:
-                    _now_tag_list = _now_tags
-
-                for _tag in _now_tag_list:
-                    if _tag:
-                        _temporary_dict[_tag.tag] = _tag.value
-                    else:
-                        _temporary_dict[_tag.tag] = None
-                # self.mutex.lock()
-                # helper_globals.tags.update(_temporary_dict)
-                # self.mutex.unlock()
-                print(f"Wrote tags:\n {_temporary_dict}")  #TODO: log.error
-
-                self.signals.write_done.emit(_temporary_dict)
-
-        except (ResponseError, RequestError, CommError, ConnectionError) as e:
-            self._connected = False
-            self.signals.connected.emit(False, f"Connection error: {e}", "Error")
-
-    def write_tags_append(self, list_of_tags):
-        """Read tags (list of tag)"""
-        self._write_tags_q.extend(list_of_tags)

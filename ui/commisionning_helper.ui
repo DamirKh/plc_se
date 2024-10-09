@@ -117,12 +117,20 @@
    </property>
    <widget class="QMenu" name="menuConfig">
     <property name="title">
-     <string>Config</string>
+     <string>File</string>
     </property>
     <addaction name="actionLoad"/>
     <addaction name="actionSave"/>
    </widget>
+   <widget class="QMenu" name="menuConfig_2">
+    <property name="title">
+     <string>Config</string>
+    </property>
+    <addaction name="actionRead_Timer"/>
+    <addaction name="actionEnable_writing_to_PLC"/>
+   </widget>
    <addaction name="menuConfig"/>
+   <addaction name="menuConfig_2"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionLoad">
@@ -139,6 +147,25 @@
    </property>
    <property name="text">
     <string>Save</string>
+   </property>
+  </action>
+  <action name="actionRead_Timer">
+   <property name="icon">
+    <iconset theme="media-playlist-repeat"/>
+   </property>
+   <property name="text">
+    <string>Read Timer</string>
+   </property>
+  </action>
+  <action name="actionEnable_writing_to_PLC">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="emblem-downloads"/>
+   </property>
+   <property name="text">
+    <string>Enable writing to PLC</string>
    </property>
   </action>
  </widget>

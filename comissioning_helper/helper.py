@@ -8,10 +8,11 @@ import json
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QCursor
 from PyQt6 import QtWidgets, QtCore
-from PyQt6.QtWidgets import QMainWindow, QApplication, QProgressDialog, QVBoxLayout, QMessageBox, QLabel
+from PyQt6.QtWidgets import QMainWindow, QApplication, QProgressDialog, QVBoxLayout, QMessageBox, QLabel, QDialog
 
 from helper_window_ui import Ui_MainWindow
 from form_tab_widget import FormTabWidget
+from config_helper_dialog_ui import Ui_Dialog
 from Plc_connection_worker import PLCConnectionWorker
 
 import user_data
@@ -22,12 +23,46 @@ logging.basicConfig(
     level=logging.DEBUG
 )
 
+
+class MyUpdateTimer(object):
+    def __init__(self, value: int = 999):
+        self._value = value
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, new_val: int):
+        self._value = new_val
+
+    def set_value(self, new_value):
+        try:
+            self._value = int(new_value)
+        except Exception as e:
+            log.error(f"Error update timer: {e}")
+
+
+class HelperConfigDialog(QDialog, Ui_Dialog):
+    def __init__(self, callback, timer_value, parent=None):
+        super().__init__(parent)
+        self.setupUi(self)
+        self._callback = callback
+        self.connectSignalsSlots()
+        self.spinBox.setValue(timer_value)
+        # self.spinBox.value(timer_value)
+
+    def connectSignalsSlots(self):
+        self.spinBox.valueChanged.connect(self._callback)
+
+
 class HelperWindow(QMainWindow, Ui_MainWindow):
-    def __init__(self, data, config_file_path,  parent=None):
+    def __init__(self, data, config_file_path, parent=None):
         super().__init__(parent)
         self.setupUi(self)
         self.connectSignalsSlots()
         self._config_file_path = config_file_path
+        self._update_timer = MyUpdateTimer(999)
 
         self._app: QtWidgets.QApplication = QtWidgets.QApplication.instance()
         # creating a label widget for status bar
@@ -46,6 +81,9 @@ class HelperWindow(QMainWindow, Ui_MainWindow):
 
         filename = filename or self._config_file_path
         config = {}
+
+        #timer setting
+        config['Timer'] = self._update_timer.value
 
         # PLC Settings
         config['PLC'] = {
@@ -82,6 +120,9 @@ class HelperWindow(QMainWindow, Ui_MainWindow):
             with open(filename, 'r') as f:
                 config = json.load(f)
 
+            #load_timer_settings
+            self._update_timer.value = config.get('Timer', 999)
+
             # Load PLC Settings
             plc_settings = config.get('PLC', {})  # Get PLC settings with fallback
             plc_path = plc_settings.get('path', "")
@@ -104,7 +145,7 @@ class HelperWindow(QMainWindow, Ui_MainWindow):
     def create_tab_from_data(self, tab_name, tag_data):
         """Creates a new tab and populates it with tag data."""
 
-        form_tab_widget = FormTabWidget(worker=self._worker)
+        form_tab_widget = FormTabWidget(worker=self._worker, timer=self._update_timer)
         self.tabWidget.addTab(form_tab_widget, tab_name)
 
         # Populate the table in the new tab
@@ -144,8 +185,23 @@ class HelperWindow(QMainWindow, Ui_MainWindow):
         self.pushButtonAddTab.clicked.connect(self.onAddTab)
         self.actionLoad.triggered.connect(self.load_config)
         self.actionSave.triggered.connect(self.save_config)
+        self.actionRead_Timer.triggered.connect(self.on_read_timer_conf)
+        self.actionEnable_writing_to_PLC.triggered.connect(self.on_write_enable)
 
+    def on_write_enable(self, state):
+        # print(f"Enable writing {state}")
+        log.info(f"Write enabled = {state}")
+        self._worker.enable_writing = state
 
+    def on_read_timer_conf(self):
+        old_value = self._update_timer.value
+        dialog = HelperConfigDialog(parent=self, timer_value=self._update_timer.value,
+                                    callback=self._update_timer.set_value)
+        result = dialog.exec()
+        if result:
+            pass
+        else:
+            self._update_timer.value = old_value
 
     def onButtonConnect(self):
         self.lineEditConnectionPath.setEnabled(False)
@@ -167,7 +223,6 @@ class HelperWindow(QMainWindow, Ui_MainWindow):
         else:
             QMessageBox.warning(self, f"Error connecting to PLC", descr)
             self._worker_not_connected()
-
 
     def tab_changed(self, index):
         # print(f"Activate tab {index}")
@@ -196,7 +251,7 @@ class HelperWindow(QMainWindow, Ui_MainWindow):
             return
 
         # Create an instance of your FormTabWidget
-        form_tab_widget = FormTabWidget(worker=self._worker)
+        form_tab_widget = FormTabWidget(worker=self._worker, timer=self._update_timer)
         self.tabWidget.addTab(form_tab_widget, tab_name)
 
         self.lineEdit_2.clear()

@@ -8,6 +8,7 @@ from Plc_connection_worker import PLCConnectionWorker
 from form_tab2_widget_ui import Ui_FormTabWidget
 
 import pycomm3
+# from helper import MyUpdateTimer
 
 class TableModel(QtCore.QAbstractTableModel):
     def __init__(self, data):
@@ -138,9 +139,10 @@ class FormTabWidget(QtWidgets.QWidget, Ui_FormTabWidget):
         'Set',
     ]
 
-    def __init__(self, worker: PLCConnectionWorker, data=None):
+    def __init__(self, worker: PLCConnectionWorker, timer, data=None):
         super().__init__()
         self._worker = worker
+        self._timer = timer
         self._worker.signals.read_done.connect(self.update_from_worker)
         self.setupUi(self)
 
@@ -171,7 +173,7 @@ class FormTabWidget(QtWidgets.QWidget, Ui_FormTabWidget):
 
         # Create a timer for periodic updates
         self.update_timer = QTimer(self)
-        self.update_timer.setInterval(999)  # Update every 1000ms (1 second)
+        self.update_timer.setInterval(self._timer.value)
         self.update_timer.timeout.connect(self.read_tag_values_from_PLC_command)
 
 
@@ -245,6 +247,7 @@ class FormTabWidget(QtWidgets.QWidget, Ui_FormTabWidget):
 
     def read_tag_values_from_PLC_command(self):
         if self._worker.connected:
+            self.update_timer.setInterval(self._timer.value)
             _tags = self.model.get_tags()
             self._worker.read_tags = _tags
 
