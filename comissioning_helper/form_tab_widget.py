@@ -6,11 +6,9 @@ from PyQt6.QtCore import Qt, QMutex, QTimer
 from PyQt6.QtWidgets import QApplication, QPushButton, QSizePolicy, QHeaderView
 import sys
 
-from Plc_connection_worker import PLCConnectionWorkerReader, PLCConnectionWorkerWriter
+from Plc_connection_worker import PLCConnectionWorker
 from form_tab2_widget_ui import Ui_FormTabWidget
 # from helper import PLCConnectionWorker
-
-import helper_globals
 
 
 class TableModel(QtCore.QAbstractTableModel):
@@ -54,8 +52,8 @@ class TableModel(QtCore.QAbstractTableModel):
             if tag_name and value:
                 try:
                     value = eval(value)
-                except:
-                    log.error()
+                except Exception as e:
+                    log.error(f"{e}")
                     continue
                 tag_value_pairs.append((tag_name, value))
         return tag_value_pairs
@@ -74,7 +72,7 @@ class TableModel(QtCore.QAbstractTableModel):
         # Emit dataChanged signal for the entire column
         top_left = self.index(0, 1)  # Row 0, Column 1 ('Current Value')
         bottom_right = self.index(
-            self.rowCount(QtCore.QModelIndex()) - 1, 1
+            self.rowCount(QtCore.QModelIndex()) - 1, 2
         )
         self.dataChanged.emit(top_left, bottom_right)
 
@@ -126,20 +124,18 @@ class TableModel(QtCore.QAbstractTableModel):
 
 
 class FormTabWidget(QtWidgets.QWidget, Ui_FormTabWidget):
-    empty_row_data = ['', '', '']
+    empty_row_data = ['', '', '', '']
     new_table_columns = [
         'Tag Name',
+        'Type',
         'Read',
         'Set',
     ]
 
-    def __init__(self, reader: PLCConnectionWorkerReader, r_mutex: QMutex, writer: PLCConnectionWorkerWriter=None, w_mutex: QMutex = None, data=None):
+    def __init__(self, worker: PLCConnectionWorker, data=None):
         super().__init__()
-        self.reader = reader
-        self.reader.signals.read_done.connect(self.update_from_reader)
-        self.r_mutex = r_mutex
-        self.writer = writer
-        self.w_mutex = w_mutex
+        self._worker = worker
+        self._worker.signals.read_done.connect(self.update_from_worker)
         self.setupUi(self)
 
         my_data_row = data or self.empty_row_data.copy()
@@ -169,45 +165,67 @@ class FormTabWidget(QtWidgets.QWidget, Ui_FormTabWidget):
 
         # Create a timer for periodic updates
         self.update_timer = QTimer(self)
-        self.update_timer.setInterval(1000)  # Update every 1000ms (1 second)
-        self.update_timer.timeout.connect(self.upload_table_from_PLC)
+        self.update_timer.setInterval(999)  # Update every 1000ms (1 second)
+        self.update_timer.timeout.connect(self.read_tag_values_from_PLC_command)
+
+
+    def get_table_data(self):
+        """
+        Retrieves the tag data from the table as a list of lists.
+
+        Returns:
+            list: A list of lists, where each inner list represents a row
+                  in the table, and each element in the inner list is a string
+                  value from the corresponding cell.
+        """
+
+        tag_data = []  # Initialize as an empty list
+        for row in range(self.model.rowCount(QtCore.QModelIndex())):
+            row_data = []
+            for col in range(self.model.columnCount(QtCore.QModelIndex())):
+                cell_value = self.model.data(self.model.index(row, col), Qt.ItemDataRole.DisplayRole)
+                row_data.append(cell_value)
+            tag_data.append(row_data)
+        return tag_data
 
     def you_are_visible(self, visible):
         self._visible = visible
         if visible:
-            print("I'm visible")
+            # print("I'm visible")
             self.on_checkbox_checked(self.checkBoxRead.checkState().value)
         else:
             self.on_checkbox_checked(QtCore.Qt.CheckState.Unchecked.value)
 
     def on_checkbox_checked(self, state):
         if state == QtCore.Qt.CheckState.Checked.value:
-            log.debug("Start periodicaly reading")
-            print("Start periodicaly reading")
+            log.debug("Start periodically reading")
             self.update_timer.start()  # Start the timer when checked
         else:
-            log.debug("Stop periodicaly reading")
-            print("Stop periodicaly reading")
+            log.debug("Stop periodically reading")
             self.update_timer.stop()   # Stop the timer when unchecked
 
     def on_header_clicked(self, logicalIndex):
         """Handle clicks on header labels."""
         match logicalIndex:
             case 0:
-                print(f"Clicked on Tag Name")
+                pass
+                # print(f"Clicked on Tag Name")
             case 1:
-                print(f"Read data")
-                self.upload_table_from_PLC()
+                # Tag's type
+                pass
+            case 2:
+                # print(f"Read data")
+                self.read_tag_values_from_PLC_command()
             case _:
-                print(f"Write data column {logicalIndex}")
+                # print(f"Write data column {logicalIndex}")
                 self.download_to_plc(logicalIndex)
 
     def download_to_plc(self, logical_index):
-        if self.writer:
+        """Write tags to PLC"""
+        if self._worker.connected:
             tags_to_write = self.model.get_tag_value_pairs(logical_index)
-            self.w_mutex.lock()
-            self.writer.write_tags_append(tags_to_write)
-            self.w_mutex.unlock()
+            log.debug(f"Write {len(tags_to_write)} tags to PLC")
+            self._worker.write_tags = tags_to_write
 
 
     def column_resized(self, index, old_size, new_size):
@@ -219,20 +237,13 @@ class FormTabWidget(QtWidgets.QWidget, Ui_FormTabWidget):
     def add_new_column(self):
         self.model.add_new_column()
 
-    def upload_table_from_PLC(self):
-        _tags = self.model.get_tags()
-        self.r_mutex.lock()
-        self.reader.read_tags_append(_tags) #TODO convert to signal
-        self.r_mutex.unlock()
+    def read_tag_values_from_PLC_command(self):
+        if self._worker.connected:
+            _tags = self.model.get_tags()
+            self._worker.read_tags = _tags
 
-    def update_from_reader(self, tags_dict):
+    def update_from_worker(self, tags_dict):
         if not self._visible:
             return
+        log.debug(f"Update {len(tags_dict)} values from PLC")
         self.model.set_current_values(tags_dict)
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = FormTabWidget()
-    window.show()
-    sys.exit(app.exec())

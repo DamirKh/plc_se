@@ -12,7 +12,7 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 class Ui_FormTabWidget(object):
     def setupUi(self, FormTabWidget):
         FormTabWidget.setObjectName("FormTabWidget")
-        FormTabWidget.resize(638, 410)
+        FormTabWidget.resize(594, 361)
         self.verticalLayout = QtWidgets.QVBoxLayout(FormTabWidget)
         self.verticalLayout.setObjectName("verticalLayout")
         self.gridLayout = QtWidgets.QGridLayout()

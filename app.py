@@ -42,7 +42,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         super().__init__(parent)
         self.setupUi(self)
         self.__title = self.windowTitle()
-        self.setupSb()
+        self.setup_status_bar()
 
         # --- Create and show the debug widget ---
         self.debug_widget = DebugWidget(g.__dict__)  # Pass the g namespace
@@ -143,7 +143,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.project_model.appendRow(self._units)
         self.ProjectChanged.emit(True, f"Model dropped")
 
-    def setupSb(self):
+    def setup_status_bar(self):
         # creating a label widget
         self.status_bar_label_1 = QLabel("Init")
         self.status_bar_label_1.setStyleSheet("border :1px solid blue;")

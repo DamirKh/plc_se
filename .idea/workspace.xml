@@ -4,12 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cf6dd84b-7254-4ec7-a58e-df2921a1f689" name="Changes" comment="CH work in progress 3">
+    <list default="true" id="cf6dd84b-7254-4ec7-a58e-df2921a1f689" name="Changes" comment="CH working fine">
+      <change afterPath="$PROJECT_DIR$/user_data.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/comissioning_helper/Plc_connection_worker.py" beforeDir="false" afterPath="$PROJECT_DIR$/comissioning_helper/Plc_connection_worker.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/comissioning_helper/form_tab2_widget_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/comissioning_helper/form_tab2_widget_ui.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/comissioning_helper/form_tab_widget.py" beforeDir="false" afterPath="$PROJECT_DIR$/comissioning_helper/form_tab_widget.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/comissioning_helper/form_tab_widget_ui.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/comissioning_helper/helper.py" beforeDir="false" afterPath="$PROJECT_DIR$/comissioning_helper/helper.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/comissioning_helper/helper_globals.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/comissioning_helper/helper_window_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/comissioning_helper/helper_window_ui.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rebuild_ui.sh" beforeDir="false" afterPath="$PROJECT_DIR$/rebuild_ui.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui/FormTab2.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/FormTab2.ui" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ui/commisionning_helper.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/commisionning_helper.ui" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -59,10 +66,14 @@
     "Python.tmp.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "master",
+    "last_opened_file_path": "/home/damir/p/PLC_SE",
     "settings.editor.selected.configurable": "advanced.settings"
   }
 }]]></component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/FieldUnits" />
       <recent name="$PROJECT_DIR$/FieldUnits/lamp" />
@@ -259,7 +270,15 @@
       <option name="project" value="LOCAL" />
       <updated>1727930102056</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="CH working">
+      <option name="closed" value="true" />
+      <created>1727962223751</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1727962223751</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -278,7 +297,9 @@
     <MESSAGE value="CH work in progress" />
     <MESSAGE value="CH work in progress 2" />
     <MESSAGE value="CH work in progress 3" />
-    <option name="LAST_COMMIT_MESSAGE" value="CH work in progress 3" />
+    <MESSAGE value="CH working" />
+    <MESSAGE value="CH working fine" />
+    <option name="LAST_COMMIT_MESSAGE" value="CH working fine" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -295,13 +316,8 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/comissioning_helper/form_tab_widget.py</url>
-          <line>63</line>
-          <option name="timeStamp" value="22" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/comissioning_helper/helper.py</url>
-          <line>96</line>
-          <option name="timeStamp" value="25" />
+          <line>220</line>
+          <option name="timeStamp" value="32" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
