@@ -4,20 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cf6dd84b-7254-4ec7-a58e-df2921a1f689" name="Changes" comment="CH working fine">
-      <change afterPath="$PROJECT_DIR$/user_data.py" afterDir="false" />
+    <list default="true" id="cf6dd84b-7254-4ec7-a58e-df2921a1f689" name="Changes" comment="CH working fine.&#10;Config save and restore working">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/comissioning_helper/Plc_connection_worker.py" beforeDir="false" afterPath="$PROJECT_DIR$/comissioning_helper/Plc_connection_worker.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/comissioning_helper/form_tab2_widget_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/comissioning_helper/form_tab2_widget_ui.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/comissioning_helper/form_tab_widget.py" beforeDir="false" afterPath="$PROJECT_DIR$/comissioning_helper/form_tab_widget.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/comissioning_helper/form_tab_widget_ui.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/comissioning_helper/helper.py" beforeDir="false" afterPath="$PROJECT_DIR$/comissioning_helper/helper.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/comissioning_helper/helper_globals.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/comissioning_helper/helper_window_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/comissioning_helper/helper_window_ui.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rebuild_ui.sh" beforeDir="false" afterPath="$PROJECT_DIR$/rebuild_ui.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ui/FormTab2.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/FormTab2.ui" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ui/commisionning_helper.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/commisionning_helper.ui" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,7 +22,13 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="ROOT_SYNC" value="DONT_SYNC" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
@@ -65,7 +61,7 @@
     "Python.tags.executor": "Run",
     "Python.tmp.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master",
+    "git-widget-placeholder": "dev-01",
     "last_opened_file_path": "/home/damir/p/PLC_SE",
     "settings.editor.selected.configurable": "advanced.settings"
   }
@@ -278,7 +274,15 @@
       <option name="project" value="LOCAL" />
       <updated>1727962223751</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="CH working fine.&#10;Config save and restore working">
+      <option name="closed" value="true" />
+      <created>1728457228135</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1728457228135</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -299,7 +303,8 @@
     <MESSAGE value="CH work in progress 3" />
     <MESSAGE value="CH working" />
     <MESSAGE value="CH working fine" />
-    <option name="LAST_COMMIT_MESSAGE" value="CH working fine" />
+    <MESSAGE value="CH working fine.&#10;Config save and restore working" />
+    <option name="LAST_COMMIT_MESSAGE" value="CH working fine.&#10;Config save and restore working" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -316,7 +321,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/comissioning_helper/form_tab_widget.py</url>
-          <line>220</line>
+          <line>226</line>
           <option name="timeStamp" value="32" />
         </line-breakpoint>
       </breakpoints>

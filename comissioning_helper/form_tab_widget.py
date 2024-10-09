@@ -2,17 +2,14 @@ import logging
 log = logging.getLogger(__name__)
 import pandas as pd
 from PyQt6 import QtCore, QtGui, QtWidgets
-from PyQt6.QtCore import Qt, QMutex, QTimer
-from PyQt6.QtWidgets import QApplication, QPushButton, QSizePolicy, QHeaderView
-import sys
+from PyQt6.QtCore import Qt, QTimer
 
 from Plc_connection_worker import PLCConnectionWorker
 from form_tab2_widget_ui import Ui_FormTabWidget
-# from helper import PLCConnectionWorker
 
+import pycomm3
 
 class TableModel(QtCore.QAbstractTableModel):
-    #'Tag Name' 'Current Value' 'Set Value'
     def __init__(self, data):
         super().__init__()
         self._data: pd.DataFrame = data
@@ -58,16 +55,17 @@ class TableModel(QtCore.QAbstractTableModel):
                 tag_value_pairs.append((tag_name, value))
         return tag_value_pairs
 
-    def set_current_values(self, tag_dict: dict):
-        for tag_name, tag_value in tag_dict.items():
+    def set_current_values(self, tag_list: list[pycomm3.tag]):
+        for tag in tag_list:
             # Find matching tag names (can be multiple matches)
             matching_rows = self._data.index[
-                self._data['Tag Name'] == tag_name
+                self._data['Tag Name'] == tag.tag
                 ].tolist()
 
             # Set the 'Current Value' for all matching rows
             for row in matching_rows:
-                self._data.loc[row, 'Read'] = str(tag_value)
+                self._data.loc[row, 'Read'] = str(tag.value)
+                self._data.loc[row, 'Type'] = str(tag.type)
 
         # Emit dataChanged signal for the entire column
         top_left = self.index(0, 1)  # Row 0, Column 1 ('Current Value')
@@ -84,6 +82,14 @@ class TableModel(QtCore.QAbstractTableModel):
             value = self._data.iloc[index.row(), index.column()]
             if value =='None':
                 return QtGui.QColor('red')
+            if index.column()>2 and value:
+                try:
+                    t = eval(value)
+                    if isinstance(t, str):
+                        return QtGui.QColor('yellow')
+                    return
+                except Exception:
+                    return QtGui.QColor('red')
 
     def setData(self, index, value, role=Qt.ItemDataRole.EditRole):
         """Save data when edited."""
@@ -242,8 +248,8 @@ class FormTabWidget(QtWidgets.QWidget, Ui_FormTabWidget):
             _tags = self.model.get_tags()
             self._worker.read_tags = _tags
 
-    def update_from_worker(self, tags_dict):
+    def update_from_worker(self, tags_list):
         if not self._visible:
             return
-        log.debug(f"Update {len(tags_dict)} values from PLC")
-        self.model.set_current_values(tags_dict)
+        log.debug(f"Update {len(tags_list)} values from PLC")
+        self.model.set_current_values(tags_list)

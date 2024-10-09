@@ -16,7 +16,7 @@ configure_default_logger(logging.WARNING)
 class PLCConnectionWorkerSignals(QObject):
     connected = pyqtSignal(bool, str, str)  # Success (bool), Message (str)
     error = pyqtSignal(str)
-    read_done = pyqtSignal(dict)
+    read_done = pyqtSignal(list)
     write_done = pyqtSignal(dict)
     lost_connection = pyqtSignal(str)
     current_time = pyqtSignal(datetime.datetime)
@@ -100,20 +100,20 @@ class PLCConnectionWorker(QThread):
                         self._connected = False
                         self.signals.lost_connection.emit(f"Connection error: {e}")
                         continue
-                    _temporary_dict = {}
+                    # _temporary_dict = {}
                     if isinstance(_now_tags, pycomm3.Tag):
                         _now_tag_list = [_now_tags, ]
                     else:
                         _now_tag_list = _now_tags
-                    log.debug(f"read tags:")
-                    for _tag in _now_tag_list:
-                        if _tag:
-                            _temporary_dict[_tag.tag] = _tag.value
-                            log.debug(f"   {_tag}")
-                        else:
-                            _temporary_dict[_tag.tag] = None
-                            log.warning(f"!  {_tag}")
-                    self.signals.read_done.emit(_temporary_dict)
+                    # log.debug(f"read tags:")
+                    # for _tag in _now_tag_list:
+                    #     if _tag:
+                    #         _temporary_dict[_tag.tag] = _tag.value
+                    #         log.debug(f"   {_tag}")
+                    #     else:
+                    #         _temporary_dict[_tag.tag] = None
+                    #         log.warning(f"!  {_tag}")
+                    self.signals.read_done.emit(_now_tag_list)
 
                 # write tags #####################################################################################
                 if self._write_enabled:
