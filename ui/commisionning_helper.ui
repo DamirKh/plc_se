@@ -94,10 +94,10 @@
        <bool>false</bool>
       </property>
       <property name="tabsClosable">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
       <property name="movable">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
       <property name="tabBarAutoHide">
        <bool>false</bool>
@@ -121,6 +121,7 @@
     </property>
     <addaction name="actionLoad"/>
     <addaction name="actionSave"/>
+    <addaction name="actionOpen_config_folder"/>
    </widget>
    <widget class="QMenu" name="menuConfig_2">
     <property name="title">
@@ -168,6 +169,11 @@
     <string>Enable writing to PLC</string>
    </property>
   </action>
+  <action name="actionOpen_config_folder">
+   <property name="text">
+    <string>Open config folder</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections>
@@ -187,8 +193,25 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>tabWidget</sender>
+   <signal>tabCloseRequested(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>tab_close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>588</x>
+     <y>116</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>609</x>
+     <y>62</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>tab_changed()</slot>
+  <slot>tab_close()</slot>
  </slots>
 </ui>

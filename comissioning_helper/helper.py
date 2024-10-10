@@ -1,5 +1,7 @@
 import datetime
+import subprocess
 import logging
+import os
 import sys
 import time
 
@@ -44,12 +46,13 @@ class MyUpdateTimer(object):
 
 
 class HelperConfigDialog(QDialog, Ui_Dialog):
-    def __init__(self, callback, timer_value, parent=None):
+    def __init__(self, callback, timer_value, confirmation, parent=None):
         super().__init__(parent)
         self.setupUi(self)
         self._callback = callback
         self.connectSignalsSlots()
         self.spinBox.setValue(timer_value)
+        self.checkBox.setChecked(confirmation)
         # self.spinBox.value(timer_value)
 
     def connectSignalsSlots(self):
@@ -63,6 +66,7 @@ class HelperWindow(QMainWindow, Ui_MainWindow):
         self.connectSignalsSlots()
         self._config_file_path = config_file_path
         self._update_timer = MyUpdateTimer(999)
+        self._confirm_on_tab_close = True
 
         self._app: QtWidgets.QApplication = QtWidgets.QApplication.instance()
         # creating a label widget for status bar
@@ -81,6 +85,9 @@ class HelperWindow(QMainWindow, Ui_MainWindow):
 
         filename = filename or self._config_file_path
         config = {}
+
+        #confirmation on tab close
+        config['Close_tab_confirm'] = self._confirm_on_tab_close
 
         #timer setting
         config['Timer'] = self._update_timer.value
@@ -119,7 +126,8 @@ class HelperWindow(QMainWindow, Ui_MainWindow):
         try:
             with open(filename, 'r') as f:
                 config = json.load(f)
-
+            # confirmation
+            self._confirm_on_tab_close = config.get('Close_tab_confirm', True)
             #load_timer_settings
             self._update_timer.value = config.get('Timer', 999)
 
@@ -141,6 +149,28 @@ class HelperWindow(QMainWindow, Ui_MainWindow):
             log.warning("Configuration file not found. Using defaults.")
         except json.JSONDecodeError as e:
             log.error(f"Error decoding JSON configuration: {e}")
+
+    def tab_close(self, index):
+        """Handles the tabCloseRequested signal of the QTabWidget."""
+
+        # Get the widget for the tab to be closed
+        widget = self.tabWidget.widget(index)
+        widget_title = self.tabWidget.tabText(index)  # Get the tab title
+        # Optional: Ask the user for confirmation before closing
+        if self._confirm_on_tab_close:
+            if QMessageBox.question(
+                self,
+                "Close Tab",
+                f"Are you sure you want to close tab {widget_title} ?",
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No  # Set default button
+            ) == QMessageBox.StandardButton.No:
+                return  # Don't close the tab if the user clicked "No"
+
+        # Remove the tab from the tab widget
+        if widget is not None:
+            widget.deleteLater()  # Ensure proper cleanup
+        self.tabWidget.removeTab(index)
 
     def create_tab_from_data(self, tab_name, tag_data):
         """Creates a new tab and populates it with tag data."""
@@ -187,19 +217,34 @@ class HelperWindow(QMainWindow, Ui_MainWindow):
         self.actionSave.triggered.connect(self.save_config)
         self.actionRead_Timer.triggered.connect(self.on_read_timer_conf)
         self.actionEnable_writing_to_PLC.triggered.connect(self.on_write_enable)
+        self.actionOpen_config_folder.triggered.connect(self.on_open_folder)
 
     def on_write_enable(self, state):
         # print(f"Enable writing {state}")
         log.info(f"Write enabled = {state}")
         self._worker.enable_writing = state
 
+    def on_open_folder(self):
+        directory_path = user_data.get_user_data_path()
+        log.info(f"Opening folder {directory_path}")
+        if sys.platform == "win32":
+            os.startfile(directory_path)
+        elif sys.platform == "darwin":
+            subprocess.run(["open", directory_path])
+        elif sys.platform == "linux":
+            subprocess.run(["xdg-open", directory_path])
+        else:
+            QMessageBox.warning(self, "Error", f"Unsupported platform: {sys.platform}")
+
     def on_read_timer_conf(self):
         old_value = self._update_timer.value
-        dialog = HelperConfigDialog(parent=self, timer_value=self._update_timer.value,
+        dialog = HelperConfigDialog(parent=self,
+                                    timer_value=self._update_timer.value,
+                                    confirmation=self._confirm_on_tab_close,
                                     callback=self._update_timer.set_value)
         result = dialog.exec()
         if result:
-            pass
+            self._confirm_on_tab_close = dialog.checkBox.checkState().value == QtCore.Qt.CheckState.Checked.value
         else:
             self._update_timer.value = old_value
 

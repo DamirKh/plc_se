@@ -4,16 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cf6dd84b-7254-4ec7-a58e-df2921a1f689" name="Changes" comment="CH working fine.&#10;Config save and restore working">
-      <change afterPath="$PROJECT_DIR$/comissioning_helper/config_helper_dialog_ui.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/config_helper.ui" afterDir="false" />
+    <list default="true" id="cf6dd84b-7254-4ec7-a58e-df2921a1f689" name="Changes" comment="user_data.py copied to commision helper">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/comissioning_helper/Plc_connection_worker.py" beforeDir="false" afterPath="$PROJECT_DIR$/comissioning_helper/Plc_connection_worker.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/comissioning_helper/config_helper_dialog_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/comissioning_helper/config_helper_dialog_ui.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/comissioning_helper/form_tab_widget.py" beforeDir="false" afterPath="$PROJECT_DIR$/comissioning_helper/form_tab_widget.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/comissioning_helper/helper.py" beforeDir="false" afterPath="$PROJECT_DIR$/comissioning_helper/helper.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/comissioning_helper/helper_window_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/comissioning_helper/helper_window_ui.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rebuild_ui.sh" beforeDir="false" afterPath="$PROJECT_DIR$/rebuild_ui.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ui/commisionning_helper.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/commisionning_helper.ui" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui/config_helper.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/config_helper.ui" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,12 +66,13 @@
     "Python.tmp.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "master",
-    "last_opened_file_path": "/home/damir/p/PLC_SE",
+    "last_opened_file_path": "/home/damir/p/PLC_SE/comissioning_helper",
     "settings.editor.selected.configurable": "advanced.settings"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/comissioning_helper" />
       <recent name="$PROJECT_DIR$" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
@@ -288,7 +287,23 @@
       <option name="project" value="LOCAL" />
       <updated>1728457228135</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="CH working fine.&#10;Timer configurable&#10;Write should be enabled before use">
+      <option name="closed" value="true" />
+      <created>1728470844023</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1728470844023</updated>
+    </task>
+    <task id="LOCAL-00008" summary="user_data.py copied to commision helper">
+      <option name="closed" value="true" />
+      <created>1728472748637</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1728472748637</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -310,7 +325,9 @@
     <MESSAGE value="CH working" />
     <MESSAGE value="CH working fine" />
     <MESSAGE value="CH working fine.&#10;Config save and restore working" />
-    <option name="LAST_COMMIT_MESSAGE" value="CH working fine.&#10;Config save and restore working" />
+    <MESSAGE value="CH working fine.&#10;Timer configurable&#10;Write should be enabled before use" />
+    <MESSAGE value="user_data.py copied to commision helper" />
+    <option name="LAST_COMMIT_MESSAGE" value="user_data.py copied to commision helper" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -324,6 +341,11 @@
           <url>file://$PROJECT_DIR$/tmp.py</url>
           <line>20</line>
           <option name="timeStamp" value="19" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/comissioning_helper/helper.py</url>
+          <line>153</line>
+          <option name="timeStamp" value="20" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

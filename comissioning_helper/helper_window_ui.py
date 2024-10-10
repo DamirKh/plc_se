@@ -49,8 +49,8 @@ class Ui_MainWindow(object):
         self.tabWidget = QtWidgets.QTabWidget(parent=self.centralwidget)
         self.tabWidget.setTabPosition(QtWidgets.QTabWidget.TabPosition.North)
         self.tabWidget.setDocumentMode(False)
-        self.tabWidget.setTabsClosable(False)
-        self.tabWidget.setMovable(False)
+        self.tabWidget.setTabsClosable(True)
+        self.tabWidget.setMovable(True)
         self.tabWidget.setTabBarAutoHide(False)
         self.tabWidget.setObjectName("tabWidget")
         self.verticalLayout_3.addWidget(self.tabWidget)
@@ -83,8 +83,11 @@ class Ui_MainWindow(object):
         icon = QtGui.QIcon.fromTheme("emblem-downloads")
         self.actionEnable_writing_to_PLC.setIcon(icon)
         self.actionEnable_writing_to_PLC.setObjectName("actionEnable_writing_to_PLC")
+        self.actionOpen_config_folder = QtGui.QAction(parent=MainWindow)
+        self.actionOpen_config_folder.setObjectName("actionOpen_config_folder")
         self.menuConfig.addAction(self.actionLoad)
         self.menuConfig.addAction(self.actionSave)
+        self.menuConfig.addAction(self.actionOpen_config_folder)
         self.menuConfig_2.addAction(self.actionRead_Timer)
         self.menuConfig_2.addAction(self.actionEnable_writing_to_PLC)
         self.menubar.addAction(self.menuConfig.menuAction())
@@ -93,6 +96,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(-1)
         self.tabWidget.currentChanged['int'].connect(MainWindow.tab_changed) # type: ignore
+        self.tabWidget.tabCloseRequested['int'].connect(MainWindow.tab_close) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -108,3 +112,4 @@ class Ui_MainWindow(object):
         self.actionSave.setText(_translate("MainWindow", "Save"))
         self.actionRead_Timer.setText(_translate("MainWindow", "Read Timer"))
         self.actionEnable_writing_to_PLC.setText(_translate("MainWindow", "Enable writing to PLC"))
+        self.actionOpen_config_folder.setText(_translate("MainWindow", "Open config folder"))

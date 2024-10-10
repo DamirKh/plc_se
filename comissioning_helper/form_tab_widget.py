@@ -19,7 +19,7 @@ class TableModel(QtCore.QAbstractTableModel):
         """Set flags for editable items."""
         # print(index.column())
         _flags = QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled
-        if index.column() == 1:  # Current value column
+        if index.column() == 1 or index.column() == 2:  # Current value column
             pass
         else:
             _flags = _flags | QtCore.Qt.ItemFlag.ItemIsEditable
