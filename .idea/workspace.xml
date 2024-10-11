@@ -4,14 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cf6dd84b-7254-4ec7-a58e-df2921a1f689" name="Changes" comment="user_data.py copied to commision helper">
+    <list default="true" id="cf6dd84b-7254-4ec7-a58e-df2921a1f689" name="Changes" comment="tab may be closed&#10;menu &quot;Open config folder&quot;">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/comissioning_helper/config_helper_dialog_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/comissioning_helper/config_helper_dialog_ui.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/comissioning_helper/form_tab_widget.py" beforeDir="false" afterPath="$PROJECT_DIR$/comissioning_helper/form_tab_widget.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/comissioning_helper/helper.py" beforeDir="false" afterPath="$PROJECT_DIR$/comissioning_helper/helper.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/comissioning_helper/helper_window_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/comissioning_helper/helper_window_ui.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ui/commisionning_helper.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/commisionning_helper.ui" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ui/config_helper.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/config_helper.ui" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -303,7 +298,15 @@
       <option name="project" value="LOCAL" />
       <updated>1728472748637</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="tab may be closed&#10;menu &quot;Open config folder&quot;">
+      <option name="closed" value="true" />
+      <created>1728537870271</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1728537870271</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -327,7 +330,8 @@
     <MESSAGE value="CH working fine.&#10;Config save and restore working" />
     <MESSAGE value="CH working fine.&#10;Timer configurable&#10;Write should be enabled before use" />
     <MESSAGE value="user_data.py copied to commision helper" />
-    <option name="LAST_COMMIT_MESSAGE" value="user_data.py copied to commision helper" />
+    <MESSAGE value="tab may be closed&#10;menu &quot;Open config folder&quot;" />
+    <option name="LAST_COMMIT_MESSAGE" value="tab may be closed&#10;menu &quot;Open config folder&quot;" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

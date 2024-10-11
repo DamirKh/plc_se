@@ -208,6 +208,7 @@ class FormTabWidget(QtWidgets.QWidget, Ui_FormTabWidget):
         if state == QtCore.Qt.CheckState.Checked.value:
             log.debug("Start periodically reading")
             self.update_timer.start()  # Start the timer when checked
+            self.update_timer.singleShot(10, self.read_tag_values_from_PLC_command)
         else:
             log.debug("Stop periodically reading")
             self.update_timer.stop()   # Stop the timer when unchecked
