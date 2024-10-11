@@ -19,7 +19,7 @@ class PLCConnectionWorkerSignals(QObject):
     read_done = pyqtSignal(list)
     write_done = pyqtSignal(dict)
     lost_connection = pyqtSignal(str)
-    current_time = pyqtSignal(datetime.datetime)
+    current_time = pyqtSignal(datetime.datetime, int)
 
 
 class PLCConnectionWorker(QThread):
@@ -32,7 +32,8 @@ class PLCConnectionWorker(QThread):
         self._write_tags_q = []
         self._connected = False
         self._write_enabled = False
-        self._loop_time = 0.02
+        self._loop_time = 0.01
+        self._worker_communication_time = 0
 
     @property
     def enable_writing(self):
@@ -95,11 +96,13 @@ class PLCConnectionWorker(QThread):
             prev_seconds = 0
             while self._connected:
                 time.sleep(self._loop_time)
+                circle_start_time = time.monotonic_ns()
                 current_seconds = int(time.time())
                 if current_seconds != prev_seconds:
                     plc_time = self.driver.get_plc_time()
                     prev_seconds = current_seconds
-                    self.signals.current_time.emit(plc_time.value['datetime'])  # once per second
+                    self.signals.current_time.emit(plc_time.value['datetime'], self._worker_communication_time)  # once per second
+                    self._worker_communication_time = 0
                 self.mutex.lock()
                 _now_reading = self._read_tags_q.copy()
                 self._read_tags_q = []
@@ -149,6 +152,9 @@ class PLCConnectionWorker(QThread):
 
                         self.signals.write_done.emit(_temporary_dict)
                         # self.signals.read_done.emit(_temporary_dict)
+
+                _cycle_comm_time = time.monotonic_ns() - circle_start_time
+                self._worker_communication_time += _cycle_comm_time
 
         except (ResponseError, RequestError, CommError, ConnectionError) as e:
             self._connected = False

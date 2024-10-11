@@ -4,9 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cf6dd84b-7254-4ec7-a58e-df2921a1f689" name="Changes" comment="tab may be closed&#10;menu &quot;Open config folder&quot;">
+    <list default="true" id="cf6dd84b-7254-4ec7-a58e-df2921a1f689" name="Changes" comment="want to calculate busy time">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/comissioning_helper/form_tab_widget.py" beforeDir="false" afterPath="$PROJECT_DIR$/comissioning_helper/form_tab_widget.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/comissioning_helper/Plc_connection_worker.py" beforeDir="false" afterPath="$PROJECT_DIR$/comissioning_helper/Plc_connection_worker.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/comissioning_helper/helper.py" beforeDir="false" afterPath="$PROJECT_DIR$/comissioning_helper/helper.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/comissioning_helper/helper_window_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/comissioning_helper/helper_window_ui.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui/commisionning_helper.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/commisionning_helper.ui" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,7 +63,7 @@
     "Python.tags.executor": "Run",
     "Python.tmp.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master",
+    "git-widget-placeholder": "dev-2",
     "last_opened_file_path": "/home/damir/p/PLC_SE/comissioning_helper",
     "settings.editor.selected.configurable": "advanced.settings"
   }
@@ -306,7 +309,23 @@
       <option name="project" value="LOCAL" />
       <updated>1728537870271</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="periodically timer fires immediately after made tab visible.">
+      <option name="closed" value="true" />
+      <created>1728621465764</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1728621465764</updated>
+    </task>
+    <task id="LOCAL-00011" summary="want to calculate busy time">
+      <option name="closed" value="true" />
+      <created>1728622125236</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1728622125236</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -331,7 +350,9 @@
     <MESSAGE value="CH working fine.&#10;Timer configurable&#10;Write should be enabled before use" />
     <MESSAGE value="user_data.py copied to commision helper" />
     <MESSAGE value="tab may be closed&#10;menu &quot;Open config folder&quot;" />
-    <option name="LAST_COMMIT_MESSAGE" value="tab may be closed&#10;menu &quot;Open config folder&quot;" />
+    <MESSAGE value="periodically timer fires immediately after made tab visible." />
+    <MESSAGE value="want to calculate busy time" />
+    <option name="LAST_COMMIT_MESSAGE" value="want to calculate busy time" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -345,11 +366,6 @@
           <url>file://$PROJECT_DIR$/tmp.py</url>
           <line>20</line>
           <option name="timeStamp" value="19" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/comissioning_helper/helper.py</url>
-          <line>153</line>
-          <option name="timeStamp" value="20" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

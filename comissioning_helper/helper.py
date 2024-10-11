@@ -67,6 +67,7 @@ class HelperWindow(QMainWindow, Ui_MainWindow):
         self._config_file_path = config_file_path
         self._update_timer = MyUpdateTimer(999)
         self._confirm_on_tab_close = True
+        self._prev_update_time = time.monotonic_ns()
 
         self._app: QtWidgets.QApplication = QtWidgets.QApplication.instance()
         # creating a label widget for status bar
@@ -301,8 +302,16 @@ class HelperWindow(QMainWindow, Ui_MainWindow):
 
         self.lineEdit_2.clear()
 
-    def plc_time_changed(self, plc_time: datetime.datetime):
+    def plc_time_changed(self, plc_time: datetime.datetime, communication_time_ns):
         # print(plc_time)
+        # now_time = time.perf_counter()
+        communication_time_sec = communication_time_ns / 1_000_000_000
+        loop_time = time.monotonic() - self._prev_update_time  # Calculate 1S cycle time. Should be about 1S
+        wait_time_proportion = ((loop_time - communication_time_sec) / loop_time) * 100
+        self._prev_update_time = time.monotonic()
+        self.progressBar.setValue(int(100 - wait_time_proportion))
+        # self.labelDuty.setText(str(communication_time_ns))
+
         time_repr = plc_time.strftime("%d %b %Y %H:%M:%S")
         self.status_bar_label_1.setText(time_repr)
 
