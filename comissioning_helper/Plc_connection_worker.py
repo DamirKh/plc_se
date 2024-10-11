@@ -32,6 +32,7 @@ class PLCConnectionWorker(QThread):
         self._write_tags_q = []
         self._connected = False
         self._write_enabled = False
+        self._loop_time = 0.02
 
     @property
     def enable_writing(self):
@@ -93,7 +94,7 @@ class PLCConnectionWorker(QThread):
         try:
             prev_seconds = 0
             while self._connected:
-                time.sleep(0.02)
+                time.sleep(self._loop_time)
                 current_seconds = int(time.time())
                 if current_seconds != prev_seconds:
                     plc_time = self.driver.get_plc_time()
@@ -116,14 +117,6 @@ class PLCConnectionWorker(QThread):
                         _now_tag_list = [_now_tags, ]
                     else:
                         _now_tag_list = _now_tags
-                    # log.debug(f"read tags:")
-                    # for _tag in _now_tag_list:
-                    #     if _tag:
-                    #         _temporary_dict[_tag.tag] = _tag.value
-                    #         log.debug(f"   {_tag}")
-                    #     else:
-                    #         _temporary_dict[_tag.tag] = None
-                    #         log.warning(f"!  {_tag}")
                     self.signals.read_done.emit(_now_tag_list)
 
                 # write tags #####################################################################################
