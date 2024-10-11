@@ -57,7 +57,7 @@ class Ui_MainWindow(object):
         self.tabWidget.setTabPosition(QtWidgets.QTabWidget.TabPosition.North)
         self.tabWidget.setDocumentMode(False)
         self.tabWidget.setTabsClosable(True)
-        self.tabWidget.setMovable(False)
+        self.tabWidget.setMovable(True)
         self.tabWidget.setTabBarAutoHide(False)
         self.tabWidget.setObjectName("tabWidget")
         self.verticalLayout_3.addWidget(self.tabWidget)
