@@ -307,7 +307,10 @@ class HelperWindow(QMainWindow, Ui_MainWindow):
         # now_time = time.perf_counter()
         communication_time_sec = communication_time_ns / 1_000_000_000
         loop_time = time.monotonic() - self._prev_update_time  # Calculate 1S cycle time. Should be about 1S
-        wait_time_proportion = ((loop_time - communication_time_sec) / loop_time) * 100
+        if loop_time:
+            wait_time_proportion = ((loop_time - communication_time_sec) / loop_time) * 100
+        else:
+            wait_time_proportion = 0.
         self._prev_update_time = time.monotonic()
         self.progressBar.setValue(int(100 - wait_time_proportion))
         # self.labelDuty.setText(str(communication_time_ns))
