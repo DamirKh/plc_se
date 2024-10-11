@@ -1,3 +1,6 @@
 /tmp.py
 /.idea
 /.venv
+build/
+dist/
+*__pycache__*
