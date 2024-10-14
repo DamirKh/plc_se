@@ -5,7 +5,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cf6dd84b-7254-4ec7-a58e-df2921a1f689" name="Changes" comment="Zero division case excluded">
+      <change afterPath="$PROJECT_DIR$/change.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/logger_widget/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/PLC_SE.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/PLC_SE.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FieldUnits/select_tag_dialog_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/FieldUnits/select_tag_dialog_ui.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/comissioning_helper/Plc_connection_worker.py" beforeDir="false" afterPath="$PROJECT_DIR$/comissioning_helper/Plc_connection_worker.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/comissioning_helper/config_helper_dialog_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/comissioning_helper/config_helper_dialog_ui.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/comissioning_helper/form_tab2_widget_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/comissioning_helper/form_tab2_widget_ui.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/comissioning_helper/helper.py" beforeDir="false" afterPath="$PROJECT_DIR$/comissioning_helper/helper.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/comissioning_helper/helper_window_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/comissioning_helper/helper_window_ui.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/main_ui.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/new_project_dialog_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/new_project_dialog_ui.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plc_dialog_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/plc_dialog_ui.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rebuild_ui.sh" beforeDir="false" afterPath="$PROJECT_DIR$/rebuild_ui.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ui/commisionning_helper.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/commisionning_helper.ui" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -23,7 +38,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="dev-2" />
+        <entry key="$PROJECT_DIR$" value="master" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -59,10 +74,11 @@
     "Python.main.executor": "Run",
     "Python.tags.executor": "Run",
     "Python.tmp.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master",
-    "last_opened_file_path": "/home/damir/p/PLC_SE/comissioning_helper",
-    "settings.editor.selected.configurable": "advanced.settings"
+    "git-widget-placeholder": "dev-01",
+    "last_opened_file_path": "/home/damir/p/PLC_SE",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   }
 }]]></component>
   <component name="RecentsManager">
@@ -78,7 +94,6 @@
   <component name="RunManager" selected="Python.helper">
     <configuration name="app" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="PLC_SE" />
-      <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -100,7 +115,6 @@
     </configuration>
     <configuration name="form_tab_widget" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="PLC_SE" />
-      <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -122,7 +136,6 @@
     </configuration>
     <configuration name="helper" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="PLC_SE" />
-      <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -144,7 +157,6 @@
     </configuration>
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="PLC_SE" />
-      <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -166,7 +178,6 @@
     </configuration>
     <configuration name="tags" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="PLC_SE" />
-      <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -188,7 +199,6 @@
     </configuration>
     <configuration name="tmp" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="PLC_SE" />
-      <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>

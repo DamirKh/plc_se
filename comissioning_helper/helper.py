@@ -10,12 +10,15 @@ import json
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QCursor
 from PyQt6 import QtWidgets, QtCore
-from PyQt6.QtWidgets import QMainWindow, QApplication, QProgressDialog, QVBoxLayout, QMessageBox, QLabel, QDialog
+from PyQt6.QtWidgets import QMainWindow, QApplication, QProgressDialog, QVBoxLayout, QMessageBox, QLabel, QDialog, \
+    QWidget
 
 from helper_window_ui import Ui_MainWindow
 from form_tab_widget import FormTabWidget
 from config_helper_dialog_ui import Ui_Dialog
 from Plc_connection_worker import PLCConnectionWorker
+
+from logger_widget import QTextEditLogger
 
 import user_data
 
@@ -24,6 +27,25 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.DEBUG
 )
+
+
+class LogWindow(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Log Viewer")
+        self.logTextBox = QTextEditLogger(self)
+        # log to text box
+        self.logTextBox.setFormatter(
+            logging.Formatter(
+                '%(asctime)s %(levelname)s %(module)s %(funcName)s %(message)s'))
+        logging.getLogger().addHandler(self.logTextBox)
+        logging.getLogger().setLevel(logging.INFO)
+
+        # Create a layout
+        layout = QVBoxLayout()
+        layout.addWidget(self.logTextBox.widget)
+        self.setLayout(layout)
+        self.hide()
 
 
 class MyUpdateTimer(object):
@@ -63,9 +85,10 @@ class HelperWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, data, config_file_path, parent=None):
         super().__init__(parent)
         self.setupUi(self)
+        self.logger_window = LogWindow(self)
         self.connectSignalsSlots()
         self._config_file_path = config_file_path
-        self._update_timer = MyUpdateTimer(999)
+        self._update_timer = MyUpdateTimer()
         self._confirm_on_tab_close = True
         self._prev_update_time = time.monotonic_ns()
 
@@ -80,6 +103,10 @@ class HelperWindow(QMainWindow, Ui_MainWindow):
         self._worker = PLCConnectionWorker()
         self._worker.signals.connected.connect(self.on_connection_check_connected)
         self._worker.signals.lost_connection.connect(self.on_connection_lost)
+        self._worker.signals.non_fatal_error.connect(self.non_fatal)
+
+    def non_fatal(self, message):
+        self.statusBar().showMessage(message, 10000)
 
     def save_config(self, filename=None):
         """Saves the application configuration to a JSON file."""
@@ -87,10 +114,10 @@ class HelperWindow(QMainWindow, Ui_MainWindow):
         filename = filename or self._config_file_path
         config = {}
 
-        #confirmation on tab close
+        # confirmation on tab close
         config['Close_tab_confirm'] = self._confirm_on_tab_close
 
-        #timer setting
+        # timer setting
         config['Timer'] = self._update_timer.value
 
         # PLC Settings
@@ -129,7 +156,7 @@ class HelperWindow(QMainWindow, Ui_MainWindow):
                 config = json.load(f)
             # confirmation
             self._confirm_on_tab_close = config.get('Close_tab_confirm', True)
-            #load_timer_settings
+            # load_timer_settings
             self._update_timer.value = config.get('Timer', 999)
 
             # Load PLC Settings
@@ -160,11 +187,11 @@ class HelperWindow(QMainWindow, Ui_MainWindow):
         # Optional: Ask the user for confirmation before closing
         if self._confirm_on_tab_close:
             if QMessageBox.question(
-                self,
-                "Close Tab",
-                f"Are you sure you want to close tab {widget_title} ?",
-                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-                QMessageBox.StandardButton.No  # Set default button
+                    self,
+                    "Close Tab",
+                    f"Are you sure you want to close tab {widget_title} ?",
+                    QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                    QMessageBox.StandardButton.No  # Set default button
             ) == QMessageBox.StandardButton.No:
                 return  # Don't close the tab if the user clicked "No"
 
@@ -219,6 +246,10 @@ class HelperWindow(QMainWindow, Ui_MainWindow):
         self.actionRead_Timer.triggered.connect(self.on_read_timer_conf)
         self.actionEnable_writing_to_PLC.triggered.connect(self.on_write_enable)
         self.actionOpen_config_folder.triggered.connect(self.on_open_folder)
+        self.actionShow_log.triggered.connect(self.show_log)
+
+    def show_log(self):
+        self.logger_window.show()
 
     def on_write_enable(self, state):
         # print(f"Enable writing {state}")

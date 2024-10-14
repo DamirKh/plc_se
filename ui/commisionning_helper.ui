@@ -136,6 +136,7 @@
     <addaction name="actionLoad"/>
     <addaction name="actionSave"/>
     <addaction name="actionOpen_config_folder"/>
+    <addaction name="actionShow_log"/>
    </widget>
    <widget class="QMenu" name="menuConfig_2">
     <property name="title">
@@ -150,7 +151,8 @@
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionLoad">
    <property name="icon">
-    <iconset theme="document-open"/>
+    <iconset theme="document-open">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Load</string>
@@ -158,7 +160,8 @@
   </action>
   <action name="actionSave">
    <property name="icon">
-    <iconset theme="document-save"/>
+    <iconset theme="document-save">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Save</string>
@@ -166,7 +169,8 @@
   </action>
   <action name="actionRead_Timer">
    <property name="icon">
-    <iconset theme="media-playlist-repeat"/>
+    <iconset theme="media-playlist-repeat">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Read Timer</string>
@@ -177,7 +181,8 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset theme="emblem-downloads"/>
+    <iconset theme="emblem-downloads">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Enable writing to PLC</string>
@@ -186,6 +191,14 @@
   <action name="actionOpen_config_folder">
    <property name="text">
     <string>Open config folder</string>
+   </property>
+  </action>
+  <action name="actionShow_log">
+   <property name="icon">
+    <iconset theme="utilities-system-monitor"/>
+   </property>
+   <property name="text">
+    <string>Show log</string>
    </property>
   </action>
  </widget>

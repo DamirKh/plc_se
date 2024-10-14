@@ -20,6 +20,7 @@ class PLCConnectionWorkerSignals(QObject):
     write_done = pyqtSignal(dict)
     lost_connection = pyqtSignal(str)
     current_time = pyqtSignal(datetime.datetime, int)
+    non_fatal_error = pyqtSignal(str)
 
 
 class PLCConnectionWorker(QThread):
@@ -114,6 +115,10 @@ class PLCConnectionWorker(QThread):
                         log.error(f"Connection error: {e}")
                         self._connected = False
                         self.signals.lost_connection.emit(f"Connection error: {e}")
+                        continue
+                    except ValueError as e:
+                        log.error(f"One or more of these tags name ara bad: {_now_reading}")
+                        self.signals.non_fatal_error.emit(f"One or more of these tags name ara bad: {_now_reading}")
                         continue
                     # _temporary_dict = {}
                     if isinstance(_now_tags, pycomm3.Tag):
