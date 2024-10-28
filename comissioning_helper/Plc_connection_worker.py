@@ -19,7 +19,8 @@ class PLCConnectionWorkerSignals(QObject):
     read_done = pyqtSignal(list)
     write_done = pyqtSignal(dict)
     lost_connection = pyqtSignal(str)
-    current_time = pyqtSignal(datetime.datetime, int)
+    plc_current_time = pyqtSignal(datetime.datetime)
+    current_worker_load = pyqtSignal(int)
     non_fatal_error = pyqtSignal(str)
 
 
@@ -35,6 +36,7 @@ class PLCConnectionWorker(QThread):
         self._write_enabled = False
         self._loop_time = 0.01
         self._worker_communication_time = 0
+        self._update_plc_time = True
 
     @property
     def enable_writing(self):
@@ -99,10 +101,18 @@ class PLCConnectionWorker(QThread):
                 time.sleep(self._loop_time)
                 circle_start_time = time.monotonic_ns()
                 current_seconds = int(time.time())
-                if current_seconds != prev_seconds:
-                    plc_time = self.driver.get_plc_time()
+                if current_seconds != prev_seconds:   # once per second
                     prev_seconds = current_seconds
-                    self.signals.current_time.emit(plc_time.value['datetime'], self._worker_communication_time)  # once per second
+                    # Update PLC time
+                    plc_time = None
+                    if self._update_plc_time:
+                        plc_time = self.driver.get_plc_time()
+                        if plc_time:
+                            self.signals.plc_current_time.emit(plc_time.value['datetime'])
+                        elif self._update_plc_time:  # if can't get time from PLC and flag update plc time is UP
+                            self._update_plc_time = False  # do not read time from PLC in the future
+                    # Update worker load
+                    self.signals.current_worker_load.emit(self._worker_communication_time)
                     self._worker_communication_time = 0
                 self.mutex.lock()
                 _now_reading = self._read_tags_q.copy()

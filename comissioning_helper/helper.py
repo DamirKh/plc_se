@@ -293,7 +293,8 @@ class HelperWindow(QMainWindow, Ui_MainWindow):
 
         if connected:
             self._worker_connected()
-            self._worker.signals.current_time.connect(self.plc_time_changed)
+            self._worker.signals.current_worker_load.connect(self.worker_load)
+            self._worker.signals.plc_current_time.connect(self.plc_onboard_time)
             # self.writer_worker = PLCConnectionWorkerWriter(self.lineEditConnectionPath.text(), self.writer_mutex)
             QMessageBox.information(self, "Success", descr)
             self._worker.start()
@@ -333,7 +334,12 @@ class HelperWindow(QMainWindow, Ui_MainWindow):
 
         self.lineEdit_2.clear()
 
-    def plc_time_changed(self, plc_time: datetime.datetime, communication_time_ns):
+    def plc_onboard_time(self, plc_time: datetime.datetime):
+        time_repr = plc_time.strftime("%d %b %Y %H:%M:%S")
+        self.status_bar_label_1.setText(time_repr)
+
+
+    def worker_load(self, communication_time_ns):
         # print(plc_time)
         # now_time = time.perf_counter()
         communication_time_sec = communication_time_ns / 1_000_000_000
@@ -346,8 +352,7 @@ class HelperWindow(QMainWindow, Ui_MainWindow):
         self.progressBar.setValue(int(100 - wait_time_proportion))
         # self.labelDuty.setText(str(communication_time_ns))
 
-        time_repr = plc_time.strftime("%d %b %Y %H:%M:%S")
-        self.status_bar_label_1.setText(time_repr)
+
 
 
 if __name__ == "__main__":
