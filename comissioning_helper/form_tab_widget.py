@@ -2,7 +2,8 @@ import logging
 log = logging.getLogger(__name__)
 import pandas as pd
 from PyQt6 import QtCore, QtGui, QtWidgets
-from PyQt6.QtCore import Qt, QTimer
+from PyQt6.QtCore import Qt, QTimer, QEvent
+from PyQt6.QtGui import QCursor
 
 from Plc_connection_worker import PLCConnectionWorker
 from form_tab2_widget_ui import Ui_FormTabWidget
@@ -163,10 +164,13 @@ class FormTabWidget(QtWidgets.QWidget, Ui_FormTabWidget):
         self.model = TableModel(data)
         self.tableView.setModel(self.model)
         self._visible = False
+        self._control_pressed = False
 
         self.connectSignalsSlots()
 
     def connectSignalsSlots(self):
+        # Connect signals for Control key press
+        self.tableView.installEventFilter(self)  # Install event filter
         self.pushButtonPlusColumn.clicked.connect(self.add_new_column)
         self.pushButtonPlusRow.clicked.connect(self.add_new_row)
         self.checkBoxRead.stateChanged.connect(self.on_checkbox_checked)
@@ -227,7 +231,23 @@ class FormTabWidget(QtWidgets.QWidget, Ui_FormTabWidget):
                 self.read_tag_values_from_PLC_command()
             case _:
                 # print(f"Write data column {logicalIndex}")
-                self.download_to_plc(logicalIndex)
+                if self._control_pressed:
+                    self.download_to_plc(logicalIndex)
+
+    def eventFilter(self, obj, event):
+        if obj == self.tableView and event.type() == QEvent.Type.KeyPress:
+            if event.key() == Qt.Key.Key_Control:
+                self._control_pressed = True
+                # print('CTRL+')
+                self.setCursor(Qt.CursorShape.PointingHandCursor)  # Change cursor to pointing hand
+                return True  # Consume the event
+        elif obj == self.tableView and event.type() == QEvent.Type.KeyRelease:
+            if event.key() == Qt.Key.Key_Control:
+                self._control_pressed = False
+                # print('CTRL-')
+                self.setCursor(Qt.CursorShape.ArrowCursor)  # Change cursor back to arrow
+                return True  # Consume the event
+        return super().eventFilter(obj, event)
 
     def download_to_plc(self, logical_index):
         """Write tags to PLC"""

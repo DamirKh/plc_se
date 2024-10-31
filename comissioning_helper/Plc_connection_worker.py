@@ -127,8 +127,8 @@ class PLCConnectionWorker(QThread):
                         self.signals.lost_connection.emit(f"Connection error: {e}")
                         continue
                     except ValueError as e:
-                        log.error(f"One or more of these tags name ara bad: {_now_reading}")
-                        self.signals.non_fatal_error.emit(f"One or more of these tags name ara bad: {_now_reading}")
+                        log.error(f"One or more of these tags name are bad: {_now_reading}")
+                        self.signals.non_fatal_error.emit(f"One or more of these tags name are bad: {_now_reading}")
                         continue
                     # _temporary_dict = {}
                     if isinstance(_now_tags, pycomm3.Tag):
@@ -181,7 +181,7 @@ class PLCConnectionWorker(QThread):
 
     @read_tags.setter
     def read_tags(self, list_of_tags):
-        print(list_of_tags)
+        # print(list_of_tags)
         self.mutex.lock()
         self._read_tags_q.extend(list_of_tags)
         self.mutex.unlock()
