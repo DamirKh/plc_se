@@ -11,12 +11,13 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QCursor
 from PyQt6 import QtWidgets, QtCore
 from PyQt6.QtWidgets import QMainWindow, QApplication, QProgressDialog, QVBoxLayout, QMessageBox, QLabel, QDialog, \
-    QWidget
+    QWidget, QTableWidgetItem
 
-from helper_window_ui import Ui_MainWindow
+from cn_diag_tool_ui import Ui_MainWindow
 from form_tab_widget import FormTabWidget
-from config_helper_dialog_ui import Ui_Dialog
+from cndt_config_dialog import Ui_Dialog
 from Plc_connection_worker import PLCConnectionWorker
+from cn_lib import scan_cn
 
 from logger_widget import QTextEditLogger
 
@@ -81,8 +82,8 @@ class HelperConfigDialog(QDialog, Ui_Dialog):
         self.spinBox.valueChanged.connect(self._callback)
 
 
-class HelperWindow(QMainWindow, Ui_MainWindow):
-    def __init__(self, data, config_file_path, parent=None):
+class DiagWindow(QMainWindow, Ui_MainWindow):
+    def __init__(self, config_file_path, parent=None):
         super().__init__(parent)
         self.setupUi(self)
         self.logger_window = LogWindow(self)
@@ -100,10 +101,7 @@ class HelperWindow(QMainWindow, Ui_MainWindow):
         # adding label to status bar
         self.statusBar().addPermanentWidget(self.status_bar_label_1)
 
-        self._worker = PLCConnectionWorker()
-        self._worker.signals.pooling.connect(self.on_connection_check_connected)
-        self._worker.signals.lost_connection.connect(self.on_connection_lost)
-        self._worker.signals.non_fatal_error.connect(self.non_fatal)
+        self._workers = {}
 
     def non_fatal(self, message):
         self.statusBar().showMessage(message, 10000)
@@ -120,24 +118,10 @@ class HelperWindow(QMainWindow, Ui_MainWindow):
         # timer setting
         config['Timer'] = self._update_timer.value
 
-        # PLC Settings
-        config['PLC'] = {
+        # CN Settings
+        config['CN'] = {
             'path': self.lineEditConnectionPath.text(),
         }
-
-        # Tab Settings
-        config['TABS'] = []
-        for i in range(self.tabWidget.count()):
-            tab_name = self.tabWidget.tabText(i)
-            widget: FormTabWidget = self.tabWidget.widget(i)
-
-            # Get tag data from the widget
-            tag_data = widget.get_table_data()
-
-            config['TABS'].append({
-                'name': tab_name,
-                'data': tag_data,
-            })
 
         try:
             with open(filename, 'w') as f:
@@ -159,18 +143,11 @@ class HelperWindow(QMainWindow, Ui_MainWindow):
             # load_timer_settings
             self._update_timer.value = config.get('Timer', 999)
 
-            # Load PLC Settings
-            plc_settings = config.get('PLC', {})  # Get PLC settings with fallback
+            # Load ControlNet Settings
+            plc_settings = config.get('CN', {})  # Get CN settings with fallback
             plc_path = plc_settings.get('path', "")
             self.lineEditConnectionPath.setText(plc_path)
 
-            # Load Tab Settings
-            for tab_info in config.get('TABS', []):
-                tab_name = tab_info.get('name', "Unnamed")
-                tag_data = tab_info.get('data', {})
-
-                # Create a new tab and populate data
-                self.create_tab_from_data(tab_name, tag_data)
             log.info(f"Configuration loaded from {filename}")
 
         except FileNotFoundError:
@@ -178,49 +155,6 @@ class HelperWindow(QMainWindow, Ui_MainWindow):
         except json.JSONDecodeError as e:
             log.error(f"Error decoding JSON configuration: {e}")
 
-    def tab_close(self, index):
-        """Handles the tabCloseRequested signal of the QTabWidget."""
-
-        # Get the widget for the tab to be closed
-        widget = self.tabWidget.widget(index)
-        widget_title = self.tabWidget.tabText(index)  # Get the tab title
-        # Optional: Ask the user for confirmation before closing
-        if self._confirm_on_tab_close:
-            if QMessageBox.question(
-                    self,
-                    "Close Tab",
-                    f"Are you sure you want to close tab {widget_title} ?",
-                    QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-                    QMessageBox.StandardButton.No  # Set default button
-            ) == QMessageBox.StandardButton.No:
-                return  # Don't close the tab if the user clicked "No"
-
-        # Remove the tab from the tab widget
-        if widget is not None:
-            widget.deleteLater()  # Ensure proper cleanup
-        self.tabWidget.removeTab(index)
-
-    def create_tab_from_data(self, tab_name, tag_data):
-        """Creates a new tab and populates it with tag data."""
-
-        form_tab_widget = FormTabWidget(worker=self._worker, timer=self._update_timer)
-        self.tabWidget.addTab(form_tab_widget, tab_name)
-
-        # Populate the table in the new tab
-        for row_index, row_data in enumerate(tag_data):
-            # 1. Ensure enough rows:
-            while row_index >= form_tab_widget.model.rowCount(QtCore.QModelIndex()):
-                form_tab_widget.model.add_new_row()
-            # 2. Ensure enough columns:
-            while len(row_data) > form_tab_widget.model.columnCount(QtCore.QModelIndex()):
-                form_tab_widget.model.add_new_column()
-            # 3. Populate each cell in the row
-            for col_index, cell_value in enumerate(row_data):
-                form_tab_widget.model.setData(
-                    form_tab_widget.model.index(row_index, col_index),
-                    cell_value,
-                    Qt.ItemDataRole.EditRole
-                )
 
     def _worker_not_connected(self):
         self.lineEditConnectionPath.setEnabled(True)
@@ -240,7 +174,7 @@ class HelperWindow(QMainWindow, Ui_MainWindow):
 
     def connectSignalsSlots(self):
         self.pushButtonConnect.clicked.connect(self.onButtonConnect)
-        self.pushButtonAddTab.clicked.connect(self.onAddTab)
+        # self.pushButtonAddTab.clicked.connect(self.onAddTab)
         self.actionLoad.triggered.connect(self.load_config)
         self.actionSave.triggered.connect(self.save_config)
         self.actionRead_Timer.triggered.connect(self.on_read_timer_conf)
@@ -287,57 +221,49 @@ class HelperWindow(QMainWindow, Ui_MainWindow):
 
         self._app.instance().setOverrideCursor(QCursor(Qt.CursorShape.BusyCursor))
 
-        self._worker.path = _path
-        connected, descr = self._worker.connect()
+        nodes, paths = scan_cn(_path)
+
+        labels = [
+            'Node',
+            'Serial',
+            'channel_A_frame_error',
+            'channel_B_frame_error',
+            'Active_Channel',
+            'Redundancy_Warning',
+            # 'good_frames_transmitted',
+            # 'good_frames_received',
+            'noise_hits',
+            'noise_hits_per_sec',
+            'good_frames_transmitted_per_sec',
+            'good_frames_received_per_sec',
+            'selected_channel_frame_error',
+            'selected_channel_frame_error_per_sec',
+            'non_concurrence_per_sec',
+            'non_concurrence',
+        ]
+        self.tableWidget.setRowCount(len(nodes))
+        self.tableWidget.setColumnCount(len(labels))
+        self.tableWidget.setHorizontalHeaderLabels(labels)
+
+        row = -1
+        for cn_module_serial, cn_path in paths.items():
+            row += 1
+            node_num = int(cn_path.split('/')[-1])
+
+            cn_node_worker = PLCConnectionWorker(node_num)
+            cn_node_worker.path = cn_path
+            cn_node_worker.signals.read_done.connect(self.update_diag_data)
+            cn_node_worker.start()
+
+            self._workers[node_num] = cn_node_worker
+
+            cn_module_nodenum_Item = QTableWidgetItem(f'[{node_num:02}]')
+            self.tableWidget.setItem(row, 0, cn_module_nodenum_Item)
+            cn_module_serial_Item = QTableWidgetItem(str(cn_module_serial))
+            self.tableWidget.setItem(row, 1, cn_module_serial_Item)
+
         self._app.instance().restoreOverrideCursor()
-
-        if connected:
-            self._worker_connected()
-            self._worker.signals.current_worker_load.connect(self.worker_load)
-            self._worker.signals.plc_current_time.connect(self.plc_onboard_time)
-            # self.writer_worker = PLCConnectionWorkerWriter(self.lineEditConnectionPath.text(), self.writer_mutex)
-            QMessageBox.information(self, "Success", descr)
-            self._worker.start()
-        else:
-            QMessageBox.warning(self, f"Error connecting to PLC", descr)
-            self._worker_not_connected()
-
-    def tab_changed(self, index):
-        # print(f"Activate tab {index}")
-        i = 0
-        widget: FormTabWidget = self.tabWidget.widget(i)
-        while widget is not None:
-            if index == i:
-                widget.you_are_visible(True)
-            else:
-                widget.you_are_visible(False)
-            i += 1
-            widget: FormTabWidget = self.tabWidget.widget(i)
-
-    def on_connection_check_connected(self, success, long_string, name):
-        # self.progress_dialog.hide()
-        if success:
-            self.labelProjectName.setText(name)
-        else:
-            pass
-            # self._worker_not_connected()
-            # QMessageBox.warning(self, f"Error connecting to PLC", long_string)
-
-    def onAddTab(self):
-        tab_name = self.lineEdit_2.text() or "Unnamed"
-        if not tab_name:
-            return
-
-        # Create an instance of your FormTabWidget
-        form_tab_widget = FormTabWidget(worker=self._worker, timer=self._update_timer)
-        self.tabWidget.addTab(form_tab_widget, tab_name)
-
-        self.lineEdit_2.clear()
-
-    def plc_onboard_time(self, plc_time: datetime.datetime):
-        time_repr = plc_time.strftime("%d %b %Y %H:%M:%S")
-        self.status_bar_label_1.setText(time_repr)
-
+        return
 
     def worker_load(self, communication_time_ns):
         # print(plc_time)
@@ -353,6 +279,43 @@ class HelperWindow(QMainWindow, Ui_MainWindow):
         # self.labelDuty.setText(str(communication_time_ns))
 
 
+    def update_diag_data(self, node_num, diag_data: dict):
+        """Updates diagnostic data in the table for the specified node using a dictionary (PyQt6).
+
+        Args:
+            node_num: The node number to update.
+            diag_data: A dictionary where keys correspond to column header labels
+                       and values are the data to be displayed.
+
+        Returns:
+            True if the node was found and updated, False otherwise.
+        """
+
+        for row in range(self.tableWidget.rowCount()):
+            item = self.tableWidget.item(row, 0)
+            if item and item.text() == f'[{node_num:02}]':
+                for key, value in diag_data.items():
+                    # Find the column index based on the header label (PyQt6 change).
+                    try:
+                        # In PyQt6, horizontalHeaderItem() returns a QTableWidgetItem or None
+                        # We need to iterate through the header items.
+                        for col in range(self.tableWidget.columnCount()):
+                            header_item = self.tableWidget.horizontalHeaderItem(col)
+                            if header_item and header_item.text() == key:
+                                break  # Found the column
+                        else:  # Loop completed without finding the header
+                            raise ValueError(f"Header '{key}' not found")
+                    except ValueError as e:
+                        # print(f"Warning: {e}")
+                        continue
+
+                    try:
+                        str_value = str(value)
+                    except (TypeError, ValueError) as e:
+                        str_value = f"Error: {e}"
+
+                    new_item = QTableWidgetItem(str_value)
+                    self.tableWidget.setItem(row, col, new_item)
 
 
 if __name__ == "__main__":
@@ -369,13 +332,7 @@ if __name__ == "__main__":
         log.info(f"Config dir created {config_dir_path}")
 
     app = QApplication(sys.argv)
-    test_data = [
-        ['TAG1', 111, 100],
-        ['TAG2', 222, 100],
-        ['TAG3', 333, 100],
-        ['TAG4', 444, 100],
 
-    ]
-    win = HelperWindow(test_data, config_file_path)
+    win = DiagWindow(config_file_path)
     win.show()
     sys.exit(app.exec())

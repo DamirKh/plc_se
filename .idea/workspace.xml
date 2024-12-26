@@ -4,10 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cf6dd84b-7254-4ec7-a58e-df2921a1f689" name="Changes" comment="log window working">
+    <list default="true" id="cf6dd84b-7254-4ec7-a58e-df2921a1f689" name="Changes" comment="helper: only set tags value if CTRL pressed">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/comissioning_helper/Plc_connection_worker.py" beforeDir="false" afterPath="$PROJECT_DIR$/comissioning_helper/Plc_connection_worker.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/comissioning_helper/helper.py" beforeDir="false" afterPath="$PROJECT_DIR$/comissioning_helper/helper.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rebuild_ui.sh" beforeDir="false" afterPath="$PROJECT_DIR$/rebuild_ui.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,33 +51,33 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.app.executor&quot;: &quot;Run&quot;,
-    &quot;Python.empty.executor&quot;: &quot;Run&quot;,
-    &quot;Python.form_tab_widget.executor&quot;: &quot;Run&quot;,
-    &quot;Python.helper.executor&quot;: &quot;Run&quot;,
-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
-    &quot;Python.tags.executor&quot;: &quot;Run&quot;,
-    &quot;Python.tmp.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;dev-01&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/damir/p/PLC_SE&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.app.executor": "Run",
+    "Python.empty.executor": "Run",
+    "Python.form_tab_widget.executor": "Run",
+    "Python.helper.executor": "Run",
+    "Python.main.executor": "Run",
+    "Python.tags.executor": "Run",
+    "Python.tmp.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "cn__diag__tool",
+    "last_opened_file_path": "/home/damir/p/PLC_SE/cn_diag_tool",
+    "settings.editor.selected.configurable": "advanced.settings"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/comissioning_helper" />
+      <recent name="$PROJECT_DIR$/cn_diag_tool" />
       <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/comissioning_helper" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/FieldUnits" />
       <recent name="$PROJECT_DIR$/FieldUnits/lamp" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.app">
+  <component name="RunManager" selected="Python.cn_diag_tool">
     <configuration name="app" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="PLC_SE" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -99,7 +99,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="form_tab_widget" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="cn_diag_tool" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="PLC_SE" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -107,11 +107,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/comissioning_helper" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/cn_diag_tool" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/comissioning_helper/form_tab_widget.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/cn_diag_tool/cn_diag_tool.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -162,27 +162,6 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="tags" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="PLC_SE" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/plc_utils" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/plc_utils/tags.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <configuration name="tmp" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="PLC_SE" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -204,13 +183,28 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="rebuild_ui.sh" type="ShConfigurationType" temporary="true">
+      <option name="SCRIPT_TEXT" value="" />
+      <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
+      <option name="SCRIPT_PATH" value="$PROJECT_DIR$/rebuild_ui.sh" />
+      <option name="SCRIPT_OPTIONS" value="" />
+      <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
+      <option name="SCRIPT_WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="INDEPENDENT_INTERPRETER_PATH" value="true" />
+      <option name="INTERPRETER_PATH" value="/bin/bash" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="EXECUTE_IN_TERMINAL" value="true" />
+      <option name="EXECUTE_SCRIPT_FILE" value="true" />
+      <envs />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.app" />
+        <item itemvalue="Python.cn_diag_tool" />
+        <item itemvalue="Shell Script.rebuild_ui.sh" />
         <item itemvalue="Python.helper" />
+        <item itemvalue="Python.app" />
         <item itemvalue="Python.tmp" />
-        <item itemvalue="Python.form_tab_widget" />
-        <item itemvalue="Python.tags" />
       </list>
     </recent_temporary>
   </component>
@@ -326,15 +320,7 @@
       <option name="project" value="LOCAL" />
       <updated>1728640685549</updated>
     </task>
-    <task id="LOCAL-00013" summary="log window working">
-      <option name="closed" value="true" />
-      <created>1728897434224</created>
-      <option name="number" value="00013" />
-      <option name="presentableId" value="LOCAL-00013" />
-      <option name="project" value="LOCAL" />
-      <updated>1728897434224</updated>
-    </task>
-    <option name="localTasksCounter" value="14" />
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -362,8 +348,7 @@
     <MESSAGE value="periodically timer fires immediately after made tab visible." />
     <MESSAGE value="want to calculate busy time" />
     <MESSAGE value="Zero division case excluded" />
-    <MESSAGE value="log window working" />
-    <option name="LAST_COMMIT_MESSAGE" value="log window working" />
+    <option name="LAST_COMMIT_MESSAGE" value="Zero division case excluded" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -377,6 +362,16 @@
           <url>file://$PROJECT_DIR$/tmp.py</url>
           <line>20</line>
           <option name="timeStamp" value="19" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/cn_diag_tool/Plc_connection_worker.py</url>
+          <line>86</line>
+          <option name="timeStamp" value="35" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/cn_diag_tool/cip_request.py</url>
+          <line>310</line>
+          <option name="timeStamp" value="37" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
