@@ -9,7 +9,7 @@ import json
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QCursor
-from PyQt6 import QtWidgets, QtCore
+from PyQt6 import QtWidgets, QtCore, QtGui
 from PyQt6.QtWidgets import QMainWindow, QApplication, QProgressDialog, QVBoxLayout, QMessageBox, QLabel, QDialog, \
     QWidget, QTableWidgetItem
 
@@ -83,6 +83,31 @@ class HelperConfigDialog(QDialog, Ui_Dialog):
 
 
 class DiagWindow(QMainWindow, Ui_MainWindow):
+    labels = [
+        'Serial',
+        # '#err_0',
+        # '#err_1',
+        # '#err_2',
+        # '#err_3',
+        # '#err_4',
+        # '#err_5',
+        # '#err_6',
+        # '#err_7',
+        'channel_A_frame_error',
+        'channel_B_frame_error',
+        'Active_Channel',
+        'Redundancy_Warning',
+        # 'good_frames_transmitted',
+        # 'good_frames_received',
+        'noise_hits',
+        'noise_hits_per_sec',
+        'good_frames_transmitted_per_sec',
+        'good_frames_received_per_sec',
+        'selected_channel_frame_error',
+        'selected_channel_frame_error_per_sec',
+        'non_concurrence_per_sec',
+        'non_concurrence',
+    ]
     def __init__(self, config_file_path, parent=None):
         super().__init__(parent)
         self.setupUi(self)
@@ -223,27 +248,9 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
 
         nodes, paths = scan_cn(_path)
 
-        labels = [
-            'Node',
-            'Serial',
-            'channel_A_frame_error',
-            'channel_B_frame_error',
-            'Active_Channel',
-            'Redundancy_Warning',
-            # 'good_frames_transmitted',
-            # 'good_frames_received',
-            'noise_hits',
-            'noise_hits_per_sec',
-            'good_frames_transmitted_per_sec',
-            'good_frames_received_per_sec',
-            'selected_channel_frame_error',
-            'selected_channel_frame_error_per_sec',
-            'non_concurrence_per_sec',
-            'non_concurrence',
-        ]
         self.tableWidget.setRowCount(len(nodes))
-        self.tableWidget.setColumnCount(len(labels))
-        self.tableWidget.setHorizontalHeaderLabels(labels)
+        self.tableWidget.setColumnCount(len(DiagWindow.labels))
+        self.tableWidget.setHorizontalHeaderLabels(DiagWindow.labels)
 
         row = -1
         for cn_module_serial, cn_path in paths.items():
@@ -258,9 +265,13 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
             self._workers[node_num] = cn_node_worker
 
             cn_module_nodenum_Item = QTableWidgetItem(f'[{node_num:02}]')
-            self.tableWidget.setItem(row, 0, cn_module_nodenum_Item)
+            self.tableWidget.setVerticalHeaderItem(row, cn_module_nodenum_Item)
+            self.tableWidget.insertColumn(row+1)
+            self.tableWidget.setHorizontalHeaderItem(row+1, cn_module_nodenum_Item)
             cn_module_serial_Item = QTableWidgetItem(str(cn_module_serial))
-            self.tableWidget.setItem(row, 1, cn_module_serial_Item)
+            self.tableWidget.setItem(row, 0, cn_module_serial_Item)
+
+
 
         self._app.instance().restoreOverrideCursor()
         return
@@ -292,9 +303,28 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
         """
 
         for row in range(self.tableWidget.rowCount()):
-            item = self.tableWidget.item(row, 0)
+            item = self.tableWidget.verticalHeaderItem(row)
             if item and item.text() == f'[{node_num:02}]':
                 for key, value in diag_data.items():
+                    ## Node intersection updates here
+                    if type(key) == type('') and key.startswith('#err_'):
+                        if value:
+                            error_node_num_in_log = f'[{value:02}]'
+
+                            for col in range(self.tableWidget.columnCount()):
+                                header_item = self.tableWidget.horizontalHeaderItem(col)
+                                if header_item and header_item.text() == error_node_num_in_log:
+                                    err_item = QTableWidgetItem('')
+                                    if error_node_num_in_log == item.text():
+                                        err_item.setData(Qt.ItemDataRole.DecorationRole, QtGui.QColor('yellow'))
+                                    else:
+                                        err_item.setData(Qt.ItemDataRole.DecorationRole, QtGui.QColor('red'))
+                                    self.tableWidget.setItem(row, col, err_item)
+                                    break  # Found the column
+                    ## End of Node intersection updates
+
+                    if key not in DiagWindow.labels:
+                        continue
                     # Find the column index based on the header label (PyQt6 change).
                     try:
                         # In PyQt6, horizontalHeaderItem() returns a QTableWidgetItem or None
@@ -316,6 +346,9 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
 
                     new_item = QTableWidgetItem(str_value)
                     self.tableWidget.setItem(row, col, new_item)
+
+    def update_node_error_intersect(self, row_num: int, error_dict: dict):
+        pass
 
 
 if __name__ == "__main__":

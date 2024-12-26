@@ -203,14 +203,14 @@ class ControlNetCounters(
         Struct(
             UINT('buffer_errors'),
             # n_bytes(8, '#error_log'),
-            USINT('#0_err'),
-            USINT('#1_err'),
-            USINT('#2_err'),
-            USINT('#3_err'),
-            USINT('#4_err'),
-            USINT('#5_err'),
-            USINT('#6_err'),
-            USINT('#7_err'),
+            USINT('#err_0'),
+            USINT('#err_1'),
+            USINT('#err_2'),
+            USINT('#err_3'),
+            USINT('#err_4'),
+            USINT('#err_5'),
+            USINT('#err_6'),
+            USINT('#err_7'),
             # n_bytes(3, '#good_frames_transmitted'),
             USINT('#0_good_frames_transmitted'),
             USINT('#1_good_frames_transmitted'),
@@ -276,7 +276,6 @@ class ControlNetLED(
     @classmethod
     def _led_decode(cls, Byte: str):
         """
-
         :param Byte: leds state byte from req
         :return:
         Bits means:

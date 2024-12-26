@@ -68,7 +68,13 @@ class PLCConnectionWorker(QThread):
                             time_delta = current_timestamp - self._previous_timestamp
 
                             counters_with_rates = counters.copy()  # Create a copy to avoid modifying original data
+                            # error emulation
+                            counters_with_rates['#err_0'] = 8
+                            counters_with_rates['#err_1'] = 8
+                            counters_with_rates['#err_2'] = 8
                             for key, value in counters.items():
+                                if key.startswith('#'):
+                                    continue  # do not calculate per_sec for counters starts with #
                                 try:
                                     increment = value - self._previous_counters.get(key,
                                                                                     value)  # Handle missing previous value
