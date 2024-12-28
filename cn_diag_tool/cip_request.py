@@ -157,7 +157,7 @@ cn_diag_counters = {
     "instance": 0x1,
     "attribute": 0x82,
     "connected": True,
-    "unconnected_send": False,
+    "unconnected_send": True,
     # "data_type": cn_diag_counters,
     "route_path": True,
     "name": 'CN_DIAG_COUNTERS'

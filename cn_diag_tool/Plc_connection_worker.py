@@ -62,16 +62,25 @@ class PLCConnectionWorker(QThread):
                         if CN_counters_raw.error:
                             self.signals.non_fatal_error.emit(self.node_num, str(CN_counters_raw.error))
                         else:
+                            reply_time = time.monotonic() - start_time
                             counters = cip_request.ControlNetCounters.decode(CN_counters_raw.value)
-                            self.update_cn_counters(counters)
+                            # self.update_cn_counters(counters)
                             current_timestamp = time.monotonic()
                             time_delta = current_timestamp - self._previous_timestamp
 
                             counters_with_rates = counters.copy()  # Create a copy to avoid modifying original data
+
                             # error emulation
                             counters_with_rates['#err_0'] = 8
                             counters_with_rates['#err_1'] = 8
                             counters_with_rates['#err_2'] = 8
+                            counters_with_rates['#err_3'] = 5
+                            counters_with_rates['#err_4'] = 5
+                            counters_with_rates['#err_5'] = 7
+                            # end of error emulation
+
+                            counters_with_rates['reply_time'] = int(reply_time * 1_000_000)
+
                             for key, value in counters.items():
                                 if key.startswith('#'):
                                     continue  # do not calculate per_sec for counters starts with #

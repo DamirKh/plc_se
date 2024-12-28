@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>817</width>
-    <height>716</height>
+    <width>1053</width>
+    <height>772</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -84,7 +84,20 @@
      </layout>
     </item>
     <item>
-     <widget class="QTableWidget" name="tableWidget"/>
+     <widget class="DraggableTableWidget" name="tableWidget"/>
+    </item>
+    <item>
+     <widget class="QPushButton" name="pushButtonAddMediaConverter">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="text">
+       <string>Add media converter</string>
+      </property>
+      <property name="flat">
+       <bool>false</bool>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -93,7 +106,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>817</width>
+     <width>1053</width>
      <height>19</height>
     </rect>
    </property>
@@ -103,6 +116,7 @@
     </property>
     <addaction name="actionLoad"/>
     <addaction name="actionSave"/>
+    <addaction name="actionShow_CrossTable"/>
     <addaction name="actionOpen_config_folder"/>
     <addaction name="actionShow_log"/>
    </widget>
@@ -117,6 +131,21 @@
    <addaction name="menuConfig_2"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionLoad"/>
+   <addaction name="actionShow_CrossTable"/>
+   <addaction name="separator"/>
+   <addaction name="actionShow_log"/>
+  </widget>
   <action name="actionLoad">
    <property name="icon">
     <iconset theme="document-open">
@@ -170,11 +199,44 @@
     <string>Show log</string>
    </property>
   </action>
+  <action name="actionShow_CrossTable">
+   <property name="icon">
+    <iconset theme="x-office-spreadsheet"/>
+   </property>
+   <property name="text">
+    <string>Show CrossTable</string>
+   </property>
+  </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>DraggableTableWidget</class>
+   <extends>QTableWidget</extends>
+   <header>DragTable.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>pushButtonAddMediaConverter</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>add_media_converter()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>526</x>
+     <y>729</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>526</x>
+     <y>385</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
  <slots>
   <slot>tab_changed()</slot>
   <slot>tab_close()</slot>
+  <slot>add_media_converter()</slot>
  </slots>
 </ui>

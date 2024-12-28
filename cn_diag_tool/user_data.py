@@ -5,6 +5,9 @@ import pathlib
 basedir = os.path.dirname(__file__)
 asset_dir = os.path.join(basedir, 'asset')
 
+Organisation = 'CPC'
+AppName = 'CN_Diagnostic_Tool'
+
 def get_user_data_path():
     """Returns the user's data directory in an OS-independent way."""
 

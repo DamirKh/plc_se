@@ -9,3 +9,4 @@ pyuic6 -o comissioning_helper/config_helper_dialog_ui.py ui/config_helper.ui
 pyuic6 -o comissioning_helper/form_tab2_widget_ui.py ui/FormTab2.ui
 # ControlNet debug tool
 pyuic6 -o cn_diag_tool/cn_diag_tool_ui.py ui/cn_diag_tool.main.ui
+pyuic6 -o cn_diag_tool/floating_table_ui.py ui/FloatingTable.ui

@@ -4,11 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cf6dd84b-7254-4ec7-a58e-df2921a1f689" name="Changes" comment="CN_diagnostic tool first working version">
+    <list default="true" id="cf6dd84b-7254-4ec7-a58e-df2921a1f689" name="Changes" comment="Intersection part working">
+      <change afterPath="$PROJECT_DIR$/cn_diag_tool/DragTable.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cn_diag_tool/floating_table_ui.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ui/FloatingTable.ui" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cn_diag_tool/Plc_connection_worker.py" beforeDir="false" afterPath="$PROJECT_DIR$/cn_diag_tool/Plc_connection_worker.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cn_diag_tool/cip_request.py" beforeDir="false" afterPath="$PROJECT_DIR$/cn_diag_tool/cip_request.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cn_diag_tool/cn_diag_tool.py" beforeDir="false" afterPath="$PROJECT_DIR$/cn_diag_tool/cn_diag_tool.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cn_diag_tool/cn_diag_tool_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/cn_diag_tool/cn_diag_tool_ui.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cn_diag_tool/user_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/cn_diag_tool/user_data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rebuild_ui.sh" beforeDir="false" afterPath="$PROJECT_DIR$/rebuild_ui.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui/cn_diag_tool.main.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/cn_diag_tool.main.ui" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,7 +70,7 @@
     "Python.tmp.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "cn__diag__tool",
-    "last_opened_file_path": "/home/damir/p/PLC_SE/cn_diag_tool",
+    "last_opened_file_path": "/home/damir/p/LigixInvent",
     "settings.editor.selected.configurable": "advanced.settings"
   }
 }]]></component>
@@ -163,7 +170,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="tmp" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="temp" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="PLC_SE" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -171,11 +178,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/cn_diag_tool" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tmp.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/cn_diag_tool/temp.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -203,9 +210,9 @@
       <list>
         <item itemvalue="Python.cn_diag_tool" />
         <item itemvalue="Shell Script.rebuild_ui.sh" />
+        <item itemvalue="Python.temp" />
         <item itemvalue="Python.helper" />
         <item itemvalue="Python.app" />
-        <item itemvalue="Python.tmp" />
       </list>
     </recent_temporary>
   </component>
@@ -377,6 +384,26 @@
           <url>file://$PROJECT_DIR$/cn_diag_tool/cip_request.py</url>
           <line>309</line>
           <option name="timeStamp" value="37" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/cn_diag_tool/cn_diag_tool.py</url>
+          <line>251</line>
+          <option name="timeStamp" value="43" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/cn_diag_tool/DragTable.py</url>
+          <line>9</line>
+          <option name="timeStamp" value="48" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/cn_diag_tool/DragTable.py</url>
+          <line>22</line>
+          <option name="timeStamp" value="49" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/cn_diag_tool/cn_diag_tool.py</url>
+          <line>92</line>
+          <option name="timeStamp" value="51" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

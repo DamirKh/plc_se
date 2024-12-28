@@ -8,10 +8,11 @@ import time
 import json
 
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QCursor
+from PyQt6.QtCore import QSettings
+from PyQt6.QtGui import QCursor, QColor, QBrush
 from PyQt6 import QtWidgets, QtCore, QtGui
 from PyQt6.QtWidgets import QMainWindow, QApplication, QProgressDialog, QVBoxLayout, QMessageBox, QLabel, QDialog, \
-    QWidget, QTableWidgetItem
+    QWidget, QTableWidgetItem, QTableWidget
 
 from cn_diag_tool_ui import Ui_MainWindow
 from form_tab_widget import FormTabWidget
@@ -20,8 +21,11 @@ from Plc_connection_worker import PLCConnectionWorker
 from cn_lib import scan_cn
 
 from logger_widget import QTextEditLogger
+import floating_table_ui
 
 import user_data
+
+# from DragTable import DraggableTableWidget
 
 logging.basicConfig(
     stream=sys.stdout,
@@ -29,10 +33,116 @@ logging.basicConfig(
     level=logging.DEBUG
 )
 
+MEDIA_CONVERTER = '=/='
 
-class LogWindow(QDialog):
+class Header_Item_NodeNum(QTableWidgetItem):
+    def __init__(self, node_num: int, *args, **kwargs):
+        color = QColor('yellow')
+        super().__init__(*args, **kwargs)
+        assert 0 < node_num < 100
+        self.setText(f'[{node_num:02}]')
+        # self.setBackground(QBrush(color))
+        self.setData(Qt.ItemDataRole.UserRole, node_num)
+
+class Item_Placeholder(QTableWidgetItem):
+    def __init__(self, *args, **kwargs):
+        color = QColor('peru')
+        super().__init__(*args, **kwargs)
+        self.setBackground(QBrush(color))
+
+class GeometrySaver(QWidget):
+    def geometry_saver_init(self, settings_key: str):
+        self.geometry_saver_settings = Glob_settings
+        self._geometry_settings_key = settings_key
+        self.restore_geometry()
+
+    def save_geometry(self):
+        if self._geometry_settings_key:
+            self.geometry_saver_settings.setValue(self._geometry_settings_key, self.saveGeometry())
+            log.debug(f'Geometry {self._geometry_settings_key} loaded ')
+
+    def restore_geometry(self):
+        if self._geometry_settings_key:
+            geometry = self.geometry_saver_settings.value(self._geometry_settings_key)
+            if geometry is not None:
+                try:
+                    self.restoreGeometry(geometry)
+                    log.debug(f'Geometry {self._geometry_settings_key} restored')
+                except TypeError as e:
+                    log.error(f"Error restoring geometry: {e}")
+
+    def closeEvent(self, event):  # Override closeEvent if not using a main window.
+        self.save_geometry()
+        super().closeEvent(event)
+
+
+class CrossTableDialog(QDialog, floating_table_ui.Ui_Dialog, GeometrySaver):
     def __init__(self, parent=None):
-        super().__init__(parent)
+        super().__init__(parent=parent)
+        self.setWindowTitle("Bad Frame Cross Table")
+
+        self.setupUi(self)
+        self.connectSignalsSlots()
+        self.geometry_saver_init(settings_key="CrossTableDialog")
+        self.hide()
+
+    def connectSignalsSlots(self):
+        pass
+
+    def fill_table(self, from_table: QTableWidget):
+        log.debug('Fill crosstable')
+        self.tableWidget.clear()
+        rows = from_table.rowCount()
+        self.tableWidget.setRowCount(rows)
+        self.tableWidget.setColumnCount(rows)
+        for row in range(rows):
+            visual_index = from_table.verticalHeader().visualIndex(row)
+            V_item = QTableWidgetItem(from_table.verticalHeaderItem(row).text())
+            H_item = QTableWidgetItem(from_table.verticalHeaderItem(row).text())
+            self.tableWidget.setVerticalHeaderItem(visual_index, V_item)
+            self.tableWidget.setHorizontalHeaderItem(visual_index, H_item)
+            if V_item.text()==MEDIA_CONVERTER:
+                placeholder = Item_Placeholder()
+                for c in range(self.tableWidget.columnCount()):
+                    self.tableWidget.setItem(visual_index, c, placeholder.clone())
+                    self.tableWidget.setItem(c, visual_index, placeholder.clone())
+
+
+    def update_diag_data(self, node_num, diag_data: dict):
+        """Updates diagnostic data in the crosstable for the specified node.
+
+        Args:
+            node_num: The node number to update.
+            diag_data: A dictionary where keys correspond to column header labels
+                       and values are the data to be displayed.
+        """
+
+        for row in range(self.tableWidget.rowCount()):
+            item = self.tableWidget.verticalHeaderItem(row)
+            if item and item.text() == f'[{node_num:02}]':
+                for key, value in diag_data.items():
+                    # ## Node intersection updates here
+                    if type(key) == type('') and key.startswith('#err_'):
+                        if value:
+                            error_node_num_in_log = f'[{value:02}]'
+
+                            for col in range(self.tableWidget.columnCount()):
+                                header_item = self.tableWidget.horizontalHeaderItem(col)
+                                if header_item and header_item.text() == error_node_num_in_log:
+                                    err_item = QTableWidgetItem('')
+                                    if error_node_num_in_log == item.text():
+                                        err_item.setData(Qt.ItemDataRole.DecorationRole, QtGui.QColor('yellow'))
+                                        # err_item.setData(Qt.ItemDataRole.UserRole)
+                                    else:
+                                        err_item.setData(Qt.ItemDataRole.DecorationRole, QtGui.QColor('red'))
+                                    self.tableWidget.setItem(row, col, err_item)
+                                    break  # Found the column
+                    # ## End of Node intersection updates
+
+
+class LogWindow(QDialog, GeometrySaver):
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
         self.setWindowTitle("Log Viewer")
         self.logTextBox = QTextEditLogger(self)
         # log to text box
@@ -46,6 +156,7 @@ class LogWindow(QDialog):
         layout = QVBoxLayout()
         layout.addWidget(self.logTextBox.widget)
         self.setLayout(layout)
+        self.geometry_saver_init(settings_key="LogWindowGeometry")
         self.hide()
 
 
@@ -85,6 +196,7 @@ class HelperConfigDialog(QDialog, Ui_Dialog):
 class DiagWindow(QMainWindow, Ui_MainWindow):
     labels = [
         'Serial',
+        'reply_time',
         # '#err_0',
         # '#err_1',
         # '#err_2',
@@ -108,10 +220,16 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
         'non_concurrence_per_sec',
         'non_concurrence',
     ]
+
     def __init__(self, config_file_path, parent=None):
         super().__init__(parent)
         self.setupUi(self)
+
+        # self.tableWidget = DraggableTableWidget(parent=self.centralwidget)
+        # self.tableWidget.setObjectName("tableWidget")
+
         self.logger_window = LogWindow(self)
+        self.MyCrossTable = CrossTableDialog(parent=self)
         self.connectSignalsSlots()
         self._config_file_path = config_file_path
         self._update_timer = MyUpdateTimer()
@@ -180,7 +298,6 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
         except json.JSONDecodeError as e:
             log.error(f"Error decoding JSON configuration: {e}")
 
-
     def _worker_not_connected(self):
         self.lineEditConnectionPath.setEnabled(True)
         self.pushButtonConnect.setEnabled(True)
@@ -206,9 +323,29 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
         self.actionEnable_writing_to_PLC.triggered.connect(self.on_write_enable)
         self.actionOpen_config_folder.triggered.connect(self.on_open_folder)
         self.actionShow_log.triggered.connect(self.show_log)
+        self.actionShow_CrossTable.triggered.connect(self.show_crosstable)
+        self.tableWidget.rowsMoved.connect(self.sync_crosstable_rows)
+
+    def sync_crosstable_rows(self):
+        """Synchronizes the row order of the CrossTableDialog with self.tableWidget."""
+        if self.MyCrossTable is not None:  # Check if dialog was created.
+            log.debug(f'Synchronise table')
+            self.MyCrossTable.fill_table(self.tableWidget)
 
     def show_log(self):
         self.logger_window.show()
+
+    def show_crosstable(self):
+        log.debug('Hit show crosstable')
+        self.MyCrossTable.show()
+
+    def add_media_converter(self):
+        cn_media_converter_item = QTableWidgetItem(MEDIA_CONVERTER)
+
+        log.debug("Hit add media converter")
+        new_row = self.tableWidget.rowCount()
+        self.tableWidget.insertRow(new_row)
+        self.tableWidget.setVerticalHeaderItem(new_row, cn_media_converter_item)
 
     def on_write_enable(self, state):
         # print(f"Enable writing {state}")
@@ -260,20 +397,20 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
             cn_node_worker = PLCConnectionWorker(node_num)
             cn_node_worker.path = cn_path
             cn_node_worker.signals.read_done.connect(self.update_diag_data)
+            cn_node_worker.signals.read_done.connect(self.MyCrossTable.update_diag_data)
             cn_node_worker.start()
 
             self._workers[node_num] = cn_node_worker
 
-            cn_module_nodenum_Item = QTableWidgetItem(f'[{node_num:02}]')
+            cn_module_nodenum_Item = Header_Item_NodeNum(node_num)
             self.tableWidget.setVerticalHeaderItem(row, cn_module_nodenum_Item)
-            self.tableWidget.insertColumn(row+1)
-            self.tableWidget.setHorizontalHeaderItem(row+1, cn_module_nodenum_Item)
+
             cn_module_serial_Item = QTableWidgetItem(str(cn_module_serial))
             self.tableWidget.setItem(row, 0, cn_module_serial_Item)
 
-
-
         self._app.instance().restoreOverrideCursor()
+        self.MyCrossTable.fill_table(self.tableWidget)
+        self.pushButtonAddMediaConverter.setEnabled(True)
         return
 
     def worker_load(self, communication_time_ns):
@@ -289,40 +426,19 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
         self.progressBar.setValue(int(100 - wait_time_proportion))
         # self.labelDuty.setText(str(communication_time_ns))
 
-
     def update_diag_data(self, node_num, diag_data: dict):
-        """Updates diagnostic data in the table for the specified node using a dictionary (PyQt6).
+        """Updates diagnostic data in the table for the specified node using a dictionary.
 
         Args:
             node_num: The node number to update.
             diag_data: A dictionary where keys correspond to column header labels
                        and values are the data to be displayed.
-
-        Returns:
-            True if the node was found and updated, False otherwise.
         """
 
         for row in range(self.tableWidget.rowCount()):
             item = self.tableWidget.verticalHeaderItem(row)
             if item and item.text() == f'[{node_num:02}]':
                 for key, value in diag_data.items():
-                    ## Node intersection updates here
-                    if type(key) == type('') and key.startswith('#err_'):
-                        if value:
-                            error_node_num_in_log = f'[{value:02}]'
-
-                            for col in range(self.tableWidget.columnCount()):
-                                header_item = self.tableWidget.horizontalHeaderItem(col)
-                                if header_item and header_item.text() == error_node_num_in_log:
-                                    err_item = QTableWidgetItem('')
-                                    if error_node_num_in_log == item.text():
-                                        err_item.setData(Qt.ItemDataRole.DecorationRole, QtGui.QColor('yellow'))
-                                    else:
-                                        err_item.setData(Qt.ItemDataRole.DecorationRole, QtGui.QColor('red'))
-                                    self.tableWidget.setItem(row, col, err_item)
-                                    break  # Found the column
-                    ## End of Node intersection updates
-
                     if key not in DiagWindow.labels:
                         continue
                     # Find the column index based on the header label (PyQt6 change).
@@ -358,6 +474,8 @@ if __name__ == "__main__":
 
     config_dir_path = user_data.get_user_data_path()
     config_file_path = config_dir_path / 'config.json'
+
+    Glob_settings = QSettings(user_data.Organisation, user_data.AppName)
 
     # Create the directory if it doesn't exist
     if not config_dir_path.exists():
