@@ -88,10 +88,10 @@ class PLCConnectionWorker(QThread):
                                     increment = value - self._previous_counters.get(key,
                                                                                     value)  # Handle missing previous value
                                     rate = increment / time_delta if time_delta > 0 else 0  # Avoid division by zero
-                                    counters_with_rates[key + "_per_sec"] = int(rate)  # Add increment per second
+                                    counters_with_rates[key + "/s"] = int(rate)  # Add increment per second
 
                                 except TypeError:  # Handle cases where counter values are not numeric
-                                    counters_with_rates[key + "_per_sec"] = "N/A"
+                                    counters_with_rates[key + "/s"] = "N/A"
 
                             self.signals.read_done.emit(self.node_num, counters_with_rates)
 

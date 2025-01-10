@@ -34,6 +34,9 @@ logging.basicConfig(
 )
 
 MEDIA_CONVERTER = '=/='
+RED = QColor('red')
+GREEN = QColor('green')
+GREY = QColor('grey')
 
 class Header_Item_NodeNum(QTableWidgetItem):
     def __init__(self, node_num: int, *args, **kwargs):
@@ -197,6 +200,8 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
     labels = [
         'Serial',
         'reply_time',
+        'LED_A',
+        'LED_B',
         # '#err_0',
         # '#err_1',
         # '#err_2',
@@ -206,19 +211,43 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
         # '#err_6',
         # '#err_7',
         'channel_A_frame_error',
+        'channel_A_frame_error/s',
         'channel_B_frame_error',
+        'channel_B_frame_error/s',
+        'selected_channel_frame_error',
+        'selected_channel_frame_error/s',
         'Active_Channel',
         'Redundancy_Warning',
-        # 'good_frames_transmitted',
-        # 'good_frames_received',
+
+        'good_frames_transmitted',
+        'good_frames_transmitted/s',
+        'aborted_frame_transmitted',
+
+        'good_frames_received',
+        'good_frames_received/s',
+        'aborted_frames_received',
+
         'noise_hits',
-        'noise_hits_per_sec',
-        'good_frames_transmitted_per_sec',
-        'good_frames_received_per_sec',
-        'selected_channel_frame_error',
-        'selected_channel_frame_error_per_sec',
-        'non_concurrence_per_sec',
+        'noise_hits/s',
+
+        'collisions',
+        'collisions/s',
+
+        'highwaters',
+        'nut_overloads',
+        'nut_overloads/s',
+        'slot_overloads',
+        'slot_overloads/s',
+        'blockages',
+        'blockages/s',
         'non_concurrence',
+        'non_concurrence/s',
+        # rarely used
+        'lonely_counter',
+        'duplicate_node',
+        'mod_mac_id',
+        'non_lowman_mods',
+        'rogue_count',
     ]
 
     def __init__(self, config_file_path, parent=None):
@@ -455,12 +484,59 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
                         # print(f"Warning: {e}")
                         continue
 
-                    try:
-                        str_value = str(value)
-                    except (TypeError, ValueError) as e:
-                        str_value = f"Error: {e}"
+                    if key in ('LED_A', 'LED_B'):
+                        pass
+                        _tick_tac = bool(int(time.time()) % 2)
+                        str_value = str(_tick_tac)
+                        new_item = QTableWidgetItem('')
+                        match value:
+                            case 0:
+                                new_item.setBackground(GREY)
+                            case 1:
+                                new_item.setBackground(GREEN)
+                            case 2:
+                                if _tick_tac:
+                                    new_item.setBackground(GREEN)
+                                else:
+                                    new_item.setBackground(GREY)
+                            case 3:
+                                if _tick_tac:
+                                    new_item.setBackground(RED)
+                                else:
+                                    new_item.setBackground(GREY)
+                            case 4:
+                                if _tick_tac:
+                                    new_item.setBackground(RED)
+                                else:
+                                    new_item.setBackground(GREEN)
+                            case 5:
+                                if key == 'LED_A' and _tick_tac:
+                                    new_item.setBackground(RED)
+                                else:
+                                    new_item.setBackground(GREY)
+                                if key == 'LED_B' and not _tick_tac:
+                                    new_item.setBackground(RED)
+                                else:
+                                    new_item.setBackground(GREY)
+                            case 6:
+                                if key == 'LED_A' and _tick_tac:
+                                    new_item.setBackground(RED)
+                                else:
+                                    new_item.setBackground(GREEN)
+                                if key == 'LED_B' and not _tick_tac:
+                                    new_item.setBackground(RED)
+                                else:
+                                    new_item.setBackground(GREEN)
+                            case 7:
+                                new_item.setBackground(RED)
+                    else:
+                        try:
+                            str_value = str(value)
+                            new_item = QTableWidgetItem(str_value)
 
-                    new_item = QTableWidgetItem(str_value)
+                        except (TypeError, ValueError) as e:
+                            str_value = f"Error: {e}"
+
                     self.tableWidget.setItem(row, col, new_item)
 
     def update_node_error_intersect(self, row_num: int, error_dict: dict):
