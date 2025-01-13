@@ -7,7 +7,7 @@ import time
 
 import json
 
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtCore import QSettings
 from PyQt6.QtGui import QCursor, QColor, QBrush
 from PyQt6 import QtWidgets, QtCore, QtGui
@@ -37,6 +37,8 @@ MEDIA_CONVERTER = '=/='
 RED = QColor('red')
 GREEN = QColor('green')
 GREY = QColor('grey')
+LED_blink_period = 800 # msec
+TICK_TACK = False
 
 class Header_Item_NodeNum(QTableWidgetItem):
     def __init__(self, node_num: int, *args, **kwargs):
@@ -275,6 +277,12 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
 
         self._workers = {}
 
+        # Create a timer for periodic LED blinkers
+        self.update_timer = QTimer(self)
+        self.update_timer.setSingleShot(False)
+        self.update_timer.setInterval(LED_blink_period)
+        self.update_timer.timeout.connect(self.led_blinker)
+
     def non_fatal(self, message):
         self.statusBar().showMessage(message, 10000)
 
@@ -349,7 +357,7 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
         self.actionLoad.triggered.connect(self.load_config)
         self.actionSave.triggered.connect(self.save_config)
         self.actionRead_Timer.triggered.connect(self.on_read_timer_conf)
-        self.actionEnable_writing_to_PLC.triggered.connect(self.on_write_enable)
+        # self.actionEnable_writing_to_PLC.triggered.connect(self.on_write_enable)
         self.actionOpen_config_folder.triggered.connect(self.on_open_folder)
         self.actionShow_log.triggered.connect(self.show_log)
         self.actionShow_CrossTable.triggered.connect(self.show_crosstable)
@@ -440,6 +448,7 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
         self._app.instance().restoreOverrideCursor()
         self.MyCrossTable.fill_table(self.tableWidget)
         self.pushButtonAddMediaConverter.setEnabled(True)
+        self.update_timer.start()
         return
 
     def worker_load(self, communication_time_ns):
@@ -454,6 +463,67 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
         self._prev_update_time = time.monotonic()
         self.progressBar.setValue(int(100 - wait_time_proportion))
         # self.labelDuty.setText(str(communication_time_ns))
+
+    def led_blinker(self):
+        global TICK_TACK
+        TICK_TACK = not TICK_TACK
+
+        for col in range(self.tableWidget.columnCount()):
+            horisontal_header_item = self.tableWidget.horizontalHeaderItem(col)
+            if horisontal_header_item and horisontal_header_item.text() in ('LED_A', 'LED_B'):
+                # found LED column
+                key = horisontal_header_item.text()
+                for row in range(self.tableWidget.rowCount()):
+                    vertical_header_item = self.tableWidget.verticalHeaderItem(row)
+                    if vertical_header_item and vertical_header_item.text() == MEDIA_CONVERTER:
+                        continue
+
+                    cell_item = self.tableWidget.item(row, col)
+                    try:
+                        value = int(cell_item.text())
+                    except ValueError:
+                        continue
+
+                    match value:
+                        case 0:
+                            cell_item.setData(Qt.ItemDataRole.DecorationRole, GREY)
+                        case 1:
+                            cell_item.setData(Qt.ItemDataRole.DecorationRole, GREEN)
+                        case 2:
+                            if TICK_TACK:
+                                cell_item.setData(Qt.ItemDataRole.DecorationRole, GREEN)
+                            else:
+                                cell_item.setData(Qt.ItemDataRole.DecorationRole, GREY)
+                        case 3:
+                            if TICK_TACK:
+                                cell_item.setData(Qt.ItemDataRole.DecorationRole, RED)
+                            else:
+                                cell_item.setData(Qt.ItemDataRole.DecorationRole, GREY)
+                        case 4:
+                            if TICK_TACK:
+                                cell_item.setData(Qt.ItemDataRole.DecorationRole, RED)
+                            else:
+                                cell_item.setData(Qt.ItemDataRole.DecorationRole, GREEN)
+                        case 5:
+                            if key == 'LED_A' and TICK_TACK:
+                                cell_item.setData(Qt.ItemDataRole.DecorationRole, RED)
+                            else:
+                                cell_item.setData(Qt.ItemDataRole.DecorationRole, GREY)
+                            if key == 'LED_B' and not TICK_TACK:
+                                cell_item.setData(Qt.ItemDataRole.DecorationRole, RED)
+                            else:
+                                cell_item.setData(Qt.ItemDataRole.DecorationRole, GREY)
+                        case 6:
+                            if key == 'LED_A' and TICK_TACK:
+                                cell_item.setData(Qt.ItemDataRole.DecorationRole, RED)
+                            else:
+                                cell_item.setData(Qt.ItemDataRole.DecorationRole, GREEN)
+                            if key == 'LED_B' and not TICK_TACK:
+                                cell_item.setData(Qt.ItemDataRole.DecorationRole, RED)
+                            else:
+                                cell_item.setData(Qt.ItemDataRole.DecorationRole, GREEN)
+                        case 7:
+                            cell_item.setData(Qt.ItemDataRole.DecorationRole, RED)
 
     def update_diag_data(self, node_num, diag_data: dict):
         """Updates diagnostic data in the table for the specified node using a dictionary.
@@ -484,63 +554,16 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
                         # print(f"Warning: {e}")
                         continue
 
-                    if key in ('LED_A', 'LED_B'):
-                        pass
-                        _tick_tac = bool(int(time.time()) % 2)
-                        str_value = str(_tick_tac)
-                        new_item = QTableWidgetItem('')
-                        match value:
-                            case 0:
-                                new_item.setBackground(GREY)
-                            case 1:
-                                new_item.setBackground(GREEN)
-                            case 2:
-                                if _tick_tac:
-                                    new_item.setBackground(GREEN)
-                                else:
-                                    new_item.setBackground(GREY)
-                            case 3:
-                                if _tick_tac:
-                                    new_item.setBackground(RED)
-                                else:
-                                    new_item.setBackground(GREY)
-                            case 4:
-                                if _tick_tac:
-                                    new_item.setBackground(RED)
-                                else:
-                                    new_item.setBackground(GREEN)
-                            case 5:
-                                if key == 'LED_A' and _tick_tac:
-                                    new_item.setBackground(RED)
-                                else:
-                                    new_item.setBackground(GREY)
-                                if key == 'LED_B' and not _tick_tac:
-                                    new_item.setBackground(RED)
-                                else:
-                                    new_item.setBackground(GREY)
-                            case 6:
-                                if key == 'LED_A' and _tick_tac:
-                                    new_item.setBackground(RED)
-                                else:
-                                    new_item.setBackground(GREEN)
-                                if key == 'LED_B' and not _tick_tac:
-                                    new_item.setBackground(RED)
-                                else:
-                                    new_item.setBackground(GREEN)
-                            case 7:
-                                new_item.setBackground(RED)
+                    try:
+                        str_value = str(value)
+                    except (TypeError, ValueError) as e:
+                        str_value = f"Error: {e}"
+                    item = self.tableWidget.item(row, col)
+                    if item:
+                        item.setText(str_value)
                     else:
-                        try:
-                            str_value = str(value)
-                            new_item = QTableWidgetItem(str_value)
-
-                        except (TypeError, ValueError) as e:
-                            str_value = f"Error: {e}"
-
-                    self.tableWidget.setItem(row, col, new_item)
-
-    def update_node_error_intersect(self, row_num: int, error_dict: dict):
-        pass
+                        new_item = QTableWidgetItem(str_value)
+                        self.tableWidget.setItem(row, col, new_item)
 
 
 if __name__ == "__main__":
