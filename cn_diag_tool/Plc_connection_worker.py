@@ -70,14 +70,14 @@ class PLCConnectionWorker(QThread):
 
                             counters_with_rates = counters.copy()  # Create a copy to avoid modifying original data
 
-                            # error emulation
-                            counters_with_rates['#err_0'] = 8
-                            counters_with_rates['#err_1'] = 8
-                            counters_with_rates['#err_2'] = 8
-                            counters_with_rates['#err_3'] = 5
-                            counters_with_rates['#err_4'] = 5
-                            counters_with_rates['#err_5'] = 7
-                            # end of error emulation
+                            # # error emulation for debug
+                            # counters_with_rates['#err_0'] = 8
+                            # counters_with_rates['#err_1'] = 8
+                            # counters_with_rates['#err_2'] = 8
+                            # counters_with_rates['#err_3'] = 5
+                            # counters_with_rates['#err_4'] = 5
+                            # counters_with_rates['#err_5'] = 7
+                            # # end of error emulation
 
                             counters_with_rates['reply_time'] = int(reply_time * 1_000_000)
 
@@ -120,7 +120,6 @@ class PLCConnectionWorker(QThread):
                     elapsed_time = end_time - start_time
                     sleep_duration = max(0, self._loop_time - elapsed_time)  # Ensure non-negative sleep
                     time.sleep(sleep_duration)
-
 
         except Exception as e:  # Catch initial connection error
             self.signals.connection_lost.emit(self.node_num, f"Failed to connect: {e}")

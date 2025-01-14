@@ -37,7 +37,7 @@ MEDIA_CONVERTER = '=/='
 RED = QColor('red')
 GREEN = QColor('green')
 GREY = QColor('grey')
-LED_blink_period = 800 # msec
+LED_blink_period = 300 # msec
 TICK_TACK = False
 
 class Header_Item_NodeNum(QTableWidgetItem):
