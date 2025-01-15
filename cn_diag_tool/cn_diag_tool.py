@@ -20,7 +20,7 @@ from cndt_config_dialog import Ui_Dialog
 from Plc_connection_worker import PLCConnectionWorker
 from cn_lib import scan_cn
 
-from logger_widget import QTextEditLogger
+# from ..logger_widget import QTextEditLogger
 import floating_table_ui
 
 import user_data
@@ -39,6 +39,21 @@ GREEN = QColor('green')
 GREY = QColor('grey')
 LED_blink_period = 300 # msec
 TICK_TACK = False
+
+class QTextEditLogger(logging.Handler, QtCore.QObject):
+    appendPlainText = QtCore.pyqtSignal(str)
+
+    def __init__(self, parent):
+        super().__init__()
+        QtCore.QObject.__init__(self)
+        self.widget = QtWidgets.QPlainTextEdit(parent)
+        self.widget.setReadOnly(True)
+        self.appendPlainText.connect(self.widget.appendPlainText)
+
+    def emit(self, record):
+        msg = self.format(record)
+        self.appendPlainText.emit(msg)
+
 
 class Header_Item_NodeNum(QTableWidgetItem):
     def __init__(self, node_num: int, *args, **kwargs):
