@@ -21,3 +21,6 @@ class DraggableTableWidget(QtWidgets.QTableWidget):
         print(f'row moved')
         self.rowsMoved.emit()
 
+    def setColumnHidden(self, column, hide):
+        super().setColumnHidden(column, hide)
+

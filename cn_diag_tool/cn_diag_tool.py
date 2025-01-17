@@ -7,15 +7,14 @@ import time
 
 import json
 
-from PyQt6.QtCore import Qt, QTimer
+from PyQt6.QtCore import Qt, QTimer, pyqtSignal
 from PyQt6.QtCore import QSettings
 from PyQt6.QtGui import QCursor, QColor, QBrush
 from PyQt6 import QtWidgets, QtCore, QtGui
 from PyQt6.QtWidgets import QMainWindow, QApplication, QProgressDialog, QVBoxLayout, QMessageBox, QLabel, QDialog, \
-    QWidget, QTableWidgetItem, QTableWidget
+    QWidget, QTableWidgetItem, QTableWidget, QGridLayout, QGroupBox, QCheckBox, QLineEdit, QDialogButtonBox
 
 from cn_diag_tool_ui import Ui_MainWindow
-from form_tab_widget import FormTabWidget
 from cndt_config_dialog import Ui_Dialog
 from Plc_connection_worker import PLCConnectionWorker
 from cn_lib import scan_cn
@@ -40,6 +39,64 @@ GREY = QColor('grey')
 LED_blink_period = 300 # msec
 TICK_TACK = False
 
+class ConfigureDialog(QDialog):
+    filterChanged = pyqtSignal(int, str)  # Define the signal when filter changed via config dialog
+
+    def __init__(self, table_widget: QTableWidget, parent=None):
+        super().__init__(parent)
+        # pprint(parent)
+        # pprint(self.parent())
+        self.setWindowTitle("Configure Data View")
+        self.tableWidget = table_widget
+
+        # Main Grid Layout
+        main_layout = QGridLayout()
+
+        # Column Visibility and Filter Section
+        column_group = QGroupBox("Column Visibility")
+        column_layout = QGridLayout()
+
+        # Create labels, checkboxes, and line edits
+        try:
+            for col in range(self.tableWidget.columnCount()):
+                header_item = self.tableWidget.horizontalHeaderItem(col)
+                if header_item and header_item.text() :
+                    column_name = header_item.text()
+                else:
+                    continue
+                label = QLabel(column_name)
+                check_box = QCheckBox()
+                check_box.setChecked(not self.tableWidget.isColumnHidden(col))
+                check_box.stateChanged.connect(lambda state, col=col: self.toggle_column_visibility(col, state))
+
+                column_layout.addWidget(label, col, 0)
+                column_layout.addWidget(check_box, col, 1)
+        except IndexError as e:
+            QMessageBox.critical(self, "Error", f"Configuration dialog error: {e}\n"
+                                                f"Delete the configuration file then restart\n\n"
+                                                f"Now program will be aborted!\n\n"
+                                                "Sorry.")
+            raise e
+
+        column_group.setLayout(column_layout)
+        main_layout.addWidget(column_group, 0, 0, 1, 2)
+
+        # OK and Cancel Buttons
+        button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
+        button_box.accepted.connect(self.accept)
+        button_box.rejected.connect(self.reject)
+        main_layout.addWidget(button_box, 2, 0, 1, 2)
+
+        self.setLayout(main_layout)
+
+    def toggle_column_visibility(self, column_index, state):
+        if state == 2:
+            self.tableWidget.showColumn(column_index)
+        elif state == 0:
+            self.tableWidget.hideColumn(column_index)
+        # self.tableWidget.
+        # self.tableWidget.layoutChanged.emit()  # Important: Notify about layout changes
+
 class QTextEditLogger(logging.Handler, QtCore.QObject):
     appendPlainText = QtCore.pyqtSignal(str)
 
@@ -53,7 +110,6 @@ class QTextEditLogger(logging.Handler, QtCore.QObject):
     def emit(self, record):
         msg = self.format(record)
         self.appendPlainText.emit(msg)
-
 
 class Header_Item_NodeNum(QTableWidgetItem):
     def __init__(self, node_num: int, *args, **kwargs):
@@ -79,7 +135,7 @@ class GeometrySaver(QWidget):
     def save_geometry(self):
         if self._geometry_settings_key:
             self.geometry_saver_settings.setValue(self._geometry_settings_key, self.saveGeometry())
-            log.debug(f'Geometry {self._geometry_settings_key} loaded ')
+            log.debug(f'Geometry {self._geometry_settings_key} saved')
 
     def restore_geometry(self):
         if self._geometry_settings_key:
@@ -94,7 +150,6 @@ class GeometrySaver(QWidget):
     def closeEvent(self, event):  # Override closeEvent if not using a main window.
         self.save_geometry()
         super().closeEvent(event)
-
 
 class CrossTableDialog(QDialog, floating_table_ui.Ui_Dialog, GeometrySaver):
     def __init__(self, parent=None):
@@ -293,10 +348,10 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
         self._workers = {}
 
         # Create a timer for periodic LED blinkers
-        self.update_timer = QTimer(self)
-        self.update_timer.setSingleShot(False)
-        self.update_timer.setInterval(LED_blink_period)
-        self.update_timer.timeout.connect(self.led_blinker)
+        self.led_blink_timer = QTimer(self)
+        self.led_blink_timer.setSingleShot(False)
+        self.led_blink_timer.setInterval(LED_blink_period)
+        self.led_blink_timer.timeout.connect(self.led_blinker)
 
     def non_fatal(self, message):
         self.statusBar().showMessage(message, 10000)
@@ -376,7 +431,13 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
         self.actionOpen_config_folder.triggered.connect(self.on_open_folder)
         self.actionShow_log.triggered.connect(self.show_log)
         self.actionShow_CrossTable.triggered.connect(self.show_crosstable)
+        self.actionTable_Config.triggered.connect(self.config_dialog)
         self.tableWidget.rowsMoved.connect(self.sync_crosstable_rows)
+
+    def config_dialog(self):
+        log.debug("Open config dialog")
+        dialog = ConfigureDialog(self.tableWidget, self)  # Pass tableWidget and parent
+        dialog.exec()  # Show modally
 
     def sync_crosstable_rows(self):
         """Synchronizes the row order of the CrossTableDialog with self.tableWidget."""
@@ -463,7 +524,7 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
         self._app.instance().restoreOverrideCursor()
         self.MyCrossTable.fill_table(self.tableWidget)
         self.pushButtonAddMediaConverter.setEnabled(True)
-        self.update_timer.start()
+        self.led_blink_timer.start()
         return
 
     def worker_load(self, communication_time_ns):

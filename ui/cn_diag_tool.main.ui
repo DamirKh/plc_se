@@ -43,45 +43,10 @@
         </property>
        </widget>
       </item>
-      <item>
-       <widget class="QLabel" name="labelProjectName">
-        <property name="text">
-         <string>Not connected</string>
-        </property>
-       </widget>
-      </item>
      </layout>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
-      <item>
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>Duty:</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QProgressBar" name="progressBar">
-        <property name="value">
-         <number>17</number>
-        </property>
-       </widget>
-      </item>
-     </layout>
+     <layout class="QHBoxLayout" name="horizontalLayout_2"/>
     </item>
     <item>
      <widget class="DraggableTableWidget" name="tableWidget"/>
@@ -145,6 +110,7 @@
    <addaction name="actionShow_CrossTable"/>
    <addaction name="separator"/>
    <addaction name="actionShow_log"/>
+   <addaction name="actionTable_Config"/>
   </widget>
   <action name="actionLoad">
    <property name="icon">
@@ -201,10 +167,22 @@
   </action>
   <action name="actionShow_CrossTable">
    <property name="icon">
-    <iconset theme="x-office-spreadsheet"/>
+    <iconset theme="x-office-spreadsheet">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Show CrossTable</string>
+   </property>
+  </action>
+  <action name="actionTable_Config">
+   <property name="icon">
+    <iconset theme="preferences-desktop"/>
+   </property>
+   <property name="text">
+    <string>Table Config</string>
+   </property>
+   <property name="toolTip">
+    <string>Open Table Congiguration</string>
    </property>
   </action>
  </widget>
