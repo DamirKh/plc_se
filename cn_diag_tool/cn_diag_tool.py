@@ -559,6 +559,8 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
                         value = int(cell_item.text())
                     except ValueError:
                         continue
+                    except AttributeError:
+                        continue
 
                     match value:
                         case 0:
