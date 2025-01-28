@@ -78,36 +78,6 @@ cn_diag1_data = Struct(
     n_bytes(34, "data_diag1")
 )
 
-# cn_diag_counters = Struct(
-#     UINT('buffer_errors'),
-#     n_bytes(8, 'error_log'),
-#     n_bytes(3, 'good_frames_transmitted'),
-#     n_bytes(3, 'good_frames_received'),
-#     USINT('selected_channel_frame_error'),
-#     USINT('channel_A_frame_error'),
-#     USINT('channel_B_frame_error'),
-#     USINT('abborted_frame_transmitted'),
-#     USINT('highwaters'),
-#     USINT('nut_overloads'),
-#     USINT('slot_overloads'),
-#     USINT('blockages'),
-#     USINT('non_concurrence'),
-#     USINT('aborted_frames_recieved'),
-#     USINT('lonely_counter'),
-#     USINT('duplicate_node'),
-#     USINT('noise_hits'),
-#     USINT('collisions'),
-#     USINT('mod_mac_id'),
-#     USINT('non_lowman_mods'),
-#     USINT('rogue_count'),
-#     USINT('unheard_moderator'),
-#     USINT('vendor_specific1'),
-#     n_bytes(4, 'reserved1'),
-#     USINT('vendor_specific2'),
-#     USINT('vendor_specific3'),
-#     n_bytes(1, 'reserved2')
-# )
-
 who = {
     "service": Services.get_attributes_all,
     "class_code": 0x1,

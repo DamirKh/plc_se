@@ -9,17 +9,16 @@ import json
 
 from PyQt6.QtCore import Qt, QTimer, pyqtSignal
 from PyQt6.QtCore import QSettings
-from PyQt6.QtGui import QCursor, QColor, QBrush
+from PyQt6.QtGui import QCursor, QColor, QBrush, QFont
 from PyQt6 import QtWidgets, QtCore, QtGui
 from PyQt6.QtWidgets import QMainWindow, QApplication, QProgressDialog, QVBoxLayout, QMessageBox, QLabel, QDialog, \
-    QWidget, QTableWidgetItem, QTableWidget, QGridLayout, QGroupBox, QCheckBox, QLineEdit, QDialogButtonBox
+    QWidget, QTableWidgetItem, QTableWidget, QGridLayout, QGroupBox, QCheckBox, QLineEdit, QDialogButtonBox, QHeaderView
 
 from cn_diag_tool_ui import Ui_MainWindow
 from cndt_config_dialog import Ui_Dialog
 from Plc_connection_worker import PLCConnectionWorker
 from cn_lib import scan_cn
 
-# from ..logger_widget import QTextEditLogger
 import floating_table_ui
 
 import user_data
@@ -36,95 +35,226 @@ MEDIA_CONVERTER = '=/='
 RED = QColor('red')
 GREEN = QColor('green')
 GREY = QColor('grey')
-LED_blink_period = 300 # msec
+LED_blink_period = 300  # msec
 TICK_TACK = False
+My_ROLE = QtCore.Qt.ItemDataRole.UserRole + 1
+HOR_HEADER_FONT = QFont()
 
-class ConfigureDialog(QDialog):
-    filterChanged = pyqtSignal(int, str)  # Define the signal when filter changed via config dialog
 
-    def __init__(self, table_widget: QTableWidget, parent=None):
-        super().__init__(parent)
-        # pprint(parent)
-        # pprint(self.parent())
-        self.setWindowTitle("Configure Data View")
-        self.tableWidget = table_widget
+class HeaderData(object):
+    def __init__(self, sid: str, comment: str = '', hint: str = '', longread: str = '', size: int = None):
+        self.sid = sid
+        self.comment = comment
+        self.hint = hint
+        self.longread = longread
+        self.size = size
 
-        # Main Grid Layout
-        main_layout = QGridLayout()
 
-        # Column Visibility and Filter Section
-        column_group = QGroupBox("Column Visibility")
-        column_layout = QGridLayout()
+LABELS = [
+    HeaderData('Serial',
+               comment='номер',
+               hint='Серийный номер модуля',
+               ),
+    HeaderData('reply_time',
+               comment='Ответ',
+               hint='Время ответа, мкс',
+               longread="""Время ответа в микросекундах. 
+               Возможно, показания некоректны и малоинформативны""",
+               ),
+    HeaderData('LED_A',
+               comment='A',
+               hint='Состояние индикатора A',
+               longread="""Состояние индикатора на модуле. 
+               Состояния при которых нет связи с модулем не могут быть отображены, потому что нет связи с модулем""",
+               ),
+    HeaderData('LED_B',
+               comment='B',
+               hint='Состояние индикатора B',
+               longread="""Состояние индикатора на модуле. 
+               Состояния при которых нет связи с модулем не могут быть отображены, потому что нет связи с модулем""",
+               ),
+    # '#err_0',
+    # '#err_1',
+    # '#err_2',
+    # '#err_3',
+    # '#err_4',
+    # '#err_5',
+    # '#err_6',
+    # '#err_7',
+    HeaderData('channel_A_frame_error',
+               comment='A err',
+               hint='Счетчик ошибок канала A',
+               longread="Счетчик ошибок канала A\n"
+                        "8 bit",
+               ),
+    HeaderData('channel_A_frame_error/s',
+               comment='A err/s',
+               hint='Ошибки канала A в секунду',
+               longread="""Ошибки по каналу А за последнюю секунду""",
+               ),
+    HeaderData('channel_B_frame_error',
+               comment='B err',
+               hint='Счетчик ошибок канала B',
+               longread="""Счетчик ошибок канала B 
+               (8bit)""",
+               ),
+    HeaderData('channel_B_frame_error/s',
+               comment='B err/s',
+               hint='Ошибки канала A в секунду',
+               longread="""Ошибки по каналу B за последнюю секунду""",
+               ),
+    HeaderData('selected_channel_frame_error',
+               comment='Err',
+               hint='Счетчик ошибок по активному каналу',
+               longread="Счетчик ошибок по активному каналу\n"
+                        "8 bit",
+               ),
+    HeaderData('selected_channel_frame_error/s',
+               comment='Err/s',
+               hint='Ошибки по активному каналу',
+               longread="""Ошибки по активному каналу за последнюю секунду""",
+               ),
+    HeaderData('Active_Channel',
+               comment='Акт.',
+               hint='Активный канал',
+               longread="""Канал, выбранный активным на данный момент""",
+               ),
+    HeaderData('Redundancy_Warning',
+               comment='Резерв',
+               hint='Флаг отсутсвия резерва',
+               longread="""Флаг отсутсвия резерва
+               активируется в случае отсутсвия резервного канала""",
+               ),
 
-        # Create labels, checkboxes, and line edits
-        try:
-            for col in range(self.tableWidget.columnCount()):
-                header_item = self.tableWidget.horizontalHeaderItem(col)
-                if header_item and header_item.text() :
-                    column_name = header_item.text()
-                else:
-                    continue
-                label = QLabel(column_name)
-                check_box = QCheckBox()
-                check_box.setChecked(not self.tableWidget.isColumnHidden(col))
-                check_box.stateChanged.connect(lambda state, col=col: self.toggle_column_visibility(col, state))
+    HeaderData('good_frames_transmitted',
+               comment='⇑',
+               hint='Счетчик успешно переданных кадров',
+               longread="""Счетчик успешно переданных кадров\n24 бита\nБолее информативно поле '⇑/с'""",
+               ),
+    HeaderData('good_frames_transmitted/s',
+               comment='⇑/с',
+               hint='Передано успешно',
+               longread="""Успешно передано кадров за последнюю секунду""",
+               ),
+    HeaderData('aborted_frame_transmitted',
+               comment='⇞',
+               hint='Счетчик оборыва передачи',
+               longread="""Счетчик обрыва передачи\n8 бит""",
+               ),
 
-                column_layout.addWidget(label, col, 0)
-                column_layout.addWidget(check_box, col, 1)
-        except IndexError as e:
-            QMessageBox.critical(self, "Error", f"Configuration dialog error: {e}\n"
-                                                f"Delete the configuration file then restart\n\n"
-                                                f"Now program will be aborted!\n\n"
-                                                "Sorry.")
-            raise e
+    HeaderData('good_frames_received',
+               comment='⇓',
+               hint='Счетчик успешно принятых кадров',
+               longread="""Счетчик успешно принятых кадров\n24 бита\nБолее информативно поле '⇓/с'""",
+               ),
+    HeaderData('good_frames_received/s',
+               comment='⇓/с',
+               hint='Принято успешно',
+               longread="""Успешно принято кадров за последнюю секунду""",
+               ),
+    HeaderData('aborted_frames_received',
+               comment='⇟',
+               hint='Счетчик обрыва приема',
+               longread="""Счетчик обрыва приема\n8 бит""",
+               ),
 
-        column_group.setLayout(column_layout)
-        main_layout.addWidget(column_group, 0, 0, 1, 2)
+    HeaderData('noise_hits',
+               comment='∿',
+               hint='Счетчик обнаружения шума',
+               longread="""Счетчик обнаружения шума на линии
+               (8 бит)""",
+               ),
+    HeaderData('noise_hits/s',
+               comment='∿/с',
+               hint='Приращение шума за секунду',
+               longread="""Приращение счетчика шума за последнюю секунду""",
+               ),
 
-        # OK and Cancel Buttons
-        button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
-        button_box.accepted.connect(self.accept)
-        button_box.rejected.connect(self.reject)
-        main_layout.addWidget(button_box, 2, 0, 1, 2)
+    HeaderData('collisions',
+               comment='⇆',
+               hint='',
+               longread="Счетчик обнаруженных столкновений\n"
+                        "8 бит",
+               ),
+    HeaderData('collisions/s',
+               comment='⇆/с',
+               hint='',
+               longread="""Приращение счетчика столкновений за последнюю секунду""",
+               ),
 
-        self.setLayout(main_layout)
+    HeaderData('highwaters',
+               comment='Перегрузка',
+               hint='',
+               longread="""""",
+               ),
+    HeaderData('nut_overloads',
+               comment='NUT перегрузка',
+               hint='',
+               longread="""""",
+               ),
+    HeaderData('nut_overloads/s',
+               comment='NUT перегрузка/c',
+               hint='',
+               longread="""""",
+               ),
+    HeaderData('slot_overloads',
+               comment='slot_overloads',
+               hint='',
+               longread="""""",
+               ),
+    HeaderData('slot_overloads/s',
+               comment='slot_overloads/s',
+               hint='',
+               longread="""""",
+               ),
+    HeaderData('blockages',
+               comment='blockages',
+               hint='',
+               longread="""""",
+               ),
+    HeaderData('blockages/s',
+               comment='blockages/s',
+               hint='',
+               longread="""""",
+               ),
+    HeaderData('non_concurrence',
+               comment='non_concurrence',
+               hint='',
+               longread="""""",
+               ),
+    HeaderData('non_concurrence/s',
+               comment='non_concurrence/s',
+               hint='',
+               longread="""""",
+               ),
+    # rarely used
+    HeaderData('lonely_counter',
+               comment='lonely_counter',
+               hint='',
+               longread="""""",
+               ),
+    HeaderData('duplicate_node',
+               comment='duplicate_node',
+               hint='',
+               longread="""""",
+               ),
+    HeaderData('mod_mac_id',
+               comment='mod_mac_id',
+               hint='',
+               longread="""""",
+               ),
+    HeaderData('non_lowman_mods',
+               comment='non_lowman_mods',
+               hint='',
+               longread="""""",
+               ),
+    HeaderData('rogue_count',
+               comment='rogue_count',
+               hint='',
+               longread="""""",
+               ),
+]
 
-    def toggle_column_visibility(self, column_index, state):
-        if state == 2:
-            self.tableWidget.showColumn(column_index)
-        elif state == 0:
-            self.tableWidget.hideColumn(column_index)
-        # self.tableWidget.
-        # self.tableWidget.layoutChanged.emit()  # Important: Notify about layout changes
-
-class QTextEditLogger(logging.Handler, QtCore.QObject):
-    appendPlainText = QtCore.pyqtSignal(str)
-
-    def __init__(self, parent):
-        super().__init__()
-        QtCore.QObject.__init__(self)
-        self.widget = QtWidgets.QPlainTextEdit(parent)
-        self.widget.setReadOnly(True)
-        self.appendPlainText.connect(self.widget.appendPlainText)
-
-    def emit(self, record):
-        msg = self.format(record)
-        self.appendPlainText.emit(msg)
-
-class Header_Item_NodeNum(QTableWidgetItem):
-    def __init__(self, node_num: int, *args, **kwargs):
-        color = QColor('yellow')
-        super().__init__(*args, **kwargs)
-        assert 0 < node_num < 100
-        self.setText(f'[{node_num:02}]')
-        # self.setBackground(QBrush(color))
-        self.setData(Qt.ItemDataRole.UserRole, node_num)
-
-class Item_Placeholder(QTableWidgetItem):
-    def __init__(self, *args, **kwargs):
-        color = QColor('peru')
-        super().__init__(*args, **kwargs)
-        self.setBackground(QBrush(color))
 
 class GeometrySaver(QWidget):
     def geometry_saver_init(self, settings_key: str):
@@ -146,10 +276,106 @@ class GeometrySaver(QWidget):
                     log.debug(f'Geometry {self._geometry_settings_key} restored')
                 except TypeError as e:
                     log.error(f"Error restoring geometry: {e}")
+            else:
+                log.debug(f'No geometry settings found for {self._geometry_settings_key}')
 
     def closeEvent(self, event):  # Override closeEvent if not using a main window.
         self.save_geometry()
         super().closeEvent(event)
+
+
+class ConfigureDialog(QDialog, GeometrySaver):
+    filterChanged = QtCore.pyqtSignal(int, str)  # Define the signal
+
+    def __init__(self, table_widget: QTableWidget, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Configure Data View")
+        self.tableWidget = table_widget
+
+        # Use a QTableWidget for the configuration options
+        self.configTable = QTableWidget(0, 3, self)  # 0 rows initially, 3 columns
+        self.configTable.setHorizontalHeaderLabels(["Column Name", "Description", "Visibility"])
+        header = self.configTable.horizontalHeader()
+        header.setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)  # Stretch column Hint
+        header.setSectionResizeMode(2, QHeaderView.ResizeMode.ResizeToContents)  # Fit checkbox
+
+        try:
+            for col in range(self.tableWidget.columnCount()):
+                header_item = self.tableWidget.horizontalHeaderItem(col)
+                header_data:HeaderData = header_item.data(My_ROLE)
+                if header_item and header_item.text():
+                    column_name = header_item.text()
+                else:
+                    continue  # do not configure the column without header or text in header
+
+                row = self.configTable.rowCount()
+                self.configTable.insertRow(row)
+
+                name_item = QTableWidgetItem(column_name)
+                name_item.setFlags(name_item.flags() & ~QtCore.Qt.ItemFlag.ItemIsEditable)  # Make name read-only
+                self.configTable.setItem(row, 0, name_item)
+
+                hint = QTableWidgetItem(header_data.hint)
+                hint.setToolTip(header_data.longread)
+                self.configTable.setItem(row, 1, hint)
+
+                check_box = QtWidgets.QCheckBox()
+                check_box.setChecked(not self.tableWidget.isColumnHidden(col))
+                check_box.stateChanged.connect(lambda state, col=col: self.toggle_column_visibility(col, state))
+                self.configTable.setCellWidget(row, 2, check_box)
+
+        except IndexError as e:
+            QMessageBox.critical(self, "Error", str(e))
+            raise  # Reraise for external handling
+
+        # Layout
+        main_layout = QtWidgets.QVBoxLayout(self)  # Use a QVBoxLayout
+        main_layout.addWidget(self.configTable)  # Add the table to the layout
+
+        button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
+        button_box.accepted.connect(self.accept)
+        button_box.rejected.connect(self.reject)
+        main_layout.addWidget(button_box)
+        self.geometry_saver_init(settings_key="ConfigDialog")
+
+    def toggle_column_visibility(self, column_index, state):
+        if state == 2:  # Checked (Qt.CheckState.Checked is 2)
+            self.tableWidget.showColumn(column_index)
+        elif state == 0:  # Unchecked (Qt.CheckState.Unchecked is 0)
+            self.tableWidget.hideColumn(column_index)
+
+
+class QTextEditLogger(logging.Handler, QtCore.QObject):
+    appendPlainText = QtCore.pyqtSignal(str)
+
+    def __init__(self, parent):
+        super().__init__()
+        QtCore.QObject.__init__(self)
+        self.widget = QtWidgets.QPlainTextEdit(parent)
+        self.widget.setReadOnly(True)
+        self.appendPlainText.connect(self.widget.appendPlainText)
+
+    def emit(self, record):
+        msg = self.format(record)
+        self.appendPlainText.emit(msg)
+
+
+class Header_Item_NodeNum(QTableWidgetItem):
+    def __init__(self, node_num: int, *args, **kwargs):
+        color = QColor('yellow')
+        super().__init__(*args, **kwargs)
+        assert 0 < node_num < 100
+        self.setText(f'[{node_num:02}]')
+        # self.setBackground(QBrush(color))
+        self.setData(Qt.ItemDataRole.UserRole, node_num)
+
+
+class Item_Placeholder(QTableWidgetItem):
+    def __init__(self, *args, **kwargs):
+        color = QColor('peru')
+        super().__init__(*args, **kwargs)
+        self.setBackground(QBrush(color))
+
 
 class CrossTableDialog(QDialog, floating_table_ui.Ui_Dialog, GeometrySaver):
     def __init__(self, parent=None):
@@ -176,12 +402,11 @@ class CrossTableDialog(QDialog, floating_table_ui.Ui_Dialog, GeometrySaver):
             H_item = QTableWidgetItem(from_table.verticalHeaderItem(row).text())
             self.tableWidget.setVerticalHeaderItem(visual_index, V_item)
             self.tableWidget.setHorizontalHeaderItem(visual_index, H_item)
-            if V_item.text()==MEDIA_CONVERTER:
+            if V_item.text() == MEDIA_CONVERTER:
                 placeholder = Item_Placeholder()
                 for c in range(self.tableWidget.columnCount()):
                     self.tableWidget.setItem(visual_index, c, placeholder.clone())
                     self.tableWidget.setItem(c, visual_index, placeholder.clone())
-
 
     def update_diag_data(self, node_num, diag_data: dict):
         """Updates diagnostic data in the crosstable for the specified node.
@@ -269,58 +494,7 @@ class HelperConfigDialog(QDialog, Ui_Dialog):
 
 
 class DiagWindow(QMainWindow, Ui_MainWindow):
-    labels = [
-        'Serial',
-        'reply_time',
-        'LED_A',
-        'LED_B',
-        # '#err_0',
-        # '#err_1',
-        # '#err_2',
-        # '#err_3',
-        # '#err_4',
-        # '#err_5',
-        # '#err_6',
-        # '#err_7',
-        'channel_A_frame_error',
-        'channel_A_frame_error/s',
-        'channel_B_frame_error',
-        'channel_B_frame_error/s',
-        'selected_channel_frame_error',
-        'selected_channel_frame_error/s',
-        'Active_Channel',
-        'Redundancy_Warning',
-
-        'good_frames_transmitted',
-        'good_frames_transmitted/s',
-        'aborted_frame_transmitted',
-
-        'good_frames_received',
-        'good_frames_received/s',
-        'aborted_frames_received',
-
-        'noise_hits',
-        'noise_hits/s',
-
-        'collisions',
-        'collisions/s',
-
-        'highwaters',
-        'nut_overloads',
-        'nut_overloads/s',
-        'slot_overloads',
-        'slot_overloads/s',
-        'blockages',
-        'blockages/s',
-        'non_concurrence',
-        'non_concurrence/s',
-        # rarely used
-        'lonely_counter',
-        'duplicate_node',
-        'mod_mac_id',
-        'non_lowman_mods',
-        'rogue_count',
-    ]
+    labels = [l.sid for l in LABELS]
 
     def __init__(self, config_file_path, parent=None):
         super().__init__(parent)
@@ -353,6 +527,8 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
         self.led_blink_timer.setInterval(LED_blink_period)
         self.led_blink_timer.timeout.connect(self.led_blinker)
 
+        self.tableWidget._config_file = user_data.get_user_data_path() / 'main_table.json'
+
     def non_fatal(self, message):
         self.statusBar().showMessage(message, 10000)
 
@@ -373,6 +549,17 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
             'path': self.lineEditConnectionPath.text(),
         }
 
+        # nodes settings
+        nodes = {}
+        nodes[MEDIA_CONVERTER] = []
+        for row in range(self.tableWidget.rowCount()):
+            item = self.tableWidget.verticalHeaderItem(row)
+            if item and item.text() !=  MEDIA_CONVERTER:
+                nodes[item.text()] = self.tableWidget.verticalHeader().visualIndex(row)
+            else:
+                nodes[MEDIA_CONVERTER].append(self.tableWidget.verticalHeader().visualIndex(row))
+        config['nodes'] = nodes
+
         try:
             with open(filename, 'w') as f:
                 json.dump(config, f, indent=4)  # Use indent for readability
@@ -391,7 +578,7 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
             # confirmation
             self._confirm_on_tab_close = config.get('Close_tab_confirm', True)
             # load_timer_settings
-            self._update_timer.value = config.get('Timer', 999)
+            self._update_timer.value = config.get('Timer', 1000)
 
             # Load ControlNet Settings
             plc_settings = config.get('CN', {})  # Get CN settings with fallback
@@ -499,8 +686,20 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
         nodes, paths = scan_cn(_path)
 
         self.tableWidget.setRowCount(len(nodes))
-        self.tableWidget.setColumnCount(len(DiagWindow.labels))
-        self.tableWidget.setHorizontalHeaderLabels(DiagWindow.labels)
+
+        #columns
+        self.tableWidget.setColumnCount(len(LABELS))
+        for column, header_data in enumerate(LABELS):
+            column_header_item = QTableWidgetItem(header_data.comment)
+            column_header_item.setData(My_ROLE, header_data)
+            column_header_item.setToolTip(header_data.longread)
+            font = column_header_item.font()  # Get the current font
+            font.setPointSize(12)  # Set the desired point size (e.g., 12)
+            column_header_item.setFont(font)  # Set the modified font back
+            self.tableWidget.setHorizontalHeaderItem(column, column_header_item)
+
+        # labels = [s.sid for s in LABELS]
+        # self.tableWidget.setHorizontalHeaderLabels(labels)
 
         row = -1
         for cn_module_serial, cn_path in paths.items():
@@ -521,24 +720,12 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
             cn_module_serial_Item = QTableWidgetItem(str(cn_module_serial))
             self.tableWidget.setItem(row, 0, cn_module_serial_Item)
 
+        self.tableWidget.load_configuration()
         self._app.instance().restoreOverrideCursor()
         self.MyCrossTable.fill_table(self.tableWidget)
         self.pushButtonAddMediaConverter.setEnabled(True)
         self.led_blink_timer.start()
         return
-
-    def worker_load(self, communication_time_ns):
-        # print(plc_time)
-        # now_time = time.perf_counter()
-        communication_time_sec = communication_time_ns / 1_000_000_000
-        loop_time = time.monotonic() - self._prev_update_time  # Calculate 1S cycle time. Should be about 1S
-        if loop_time:
-            wait_time_proportion = ((loop_time - communication_time_sec) / loop_time) * 100
-        else:
-            wait_time_proportion = 0.
-        self._prev_update_time = time.monotonic()
-        self.progressBar.setValue(int(100 - wait_time_proportion))
-        # self.labelDuty.setText(str(communication_time_ns))
 
     def led_blinker(self):
         global TICK_TACK
@@ -546,7 +733,8 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
 
         for col in range(self.tableWidget.columnCount()):
             horisontal_header_item = self.tableWidget.horizontalHeaderItem(col)
-            if horisontal_header_item and horisontal_header_item.text() in ('LED_A', 'LED_B'):
+            column_data: HeaderData = self.tableWidget.horizontalHeaderItem(col).data(My_ROLE)
+            if horisontal_header_item and column_data.sid in ('LED_A', 'LED_B'):
                 # found LED column
                 key = horisontal_header_item.text()
                 for row in range(self.tableWidget.rowCount()):
@@ -624,7 +812,8 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
                         # We need to iterate through the header items.
                         for col in range(self.tableWidget.columnCount()):
                             header_item = self.tableWidget.horizontalHeaderItem(col)
-                            if header_item and header_item.text() == key:
+                            column_data: HeaderData = self.tableWidget.horizontalHeaderItem(col).data(My_ROLE)
+                            if header_item and column_data.sid == key:
                                 break  # Found the column
                         else:  # Loop completed without finding the header
                             raise ValueError(f"Header '{key}' not found")
