@@ -340,9 +340,9 @@ class ConfigureDialog(QDialog, GeometrySaver):
 
     def toggle_column_visibility(self, column_index, state):
         if state == 2:  # Checked (Qt.CheckState.Checked is 2)
-            self.tableWidget.showColumn(column_index)
+            self.tableWidget.setColumnHidden(column_index, False)
         elif state == 0:  # Unchecked (Qt.CheckState.Unchecked is 0)
-            self.tableWidget.hideColumn(column_index)
+            self.tableWidget.setColumnHidden(column_index, True)
 
 
 class QTextEditLogger(logging.Handler, QtCore.QObject):
@@ -520,6 +520,7 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
         self.statusBar().addPermanentWidget(self.status_bar_label_1)
 
         self._workers = {}
+        self._site_loaded = False
 
         # Create a timer for periodic LED blinkers
         self.led_blink_timer = QTimer(self)
@@ -584,6 +585,25 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
             plc_settings = config.get('CN', {})  # Get CN settings with fallback
             plc_path = plc_settings.get('path', "")
             self.lineEditConnectionPath.setText(plc_path)
+
+            # load nodes
+            visual_order = []
+            _media_convs = config['nodes'].pop(MEDIA_CONVERTER, [])
+            for node in config['nodes']:
+                node_num = int(node[1:-1])
+                row = self.tableWidget.rowCount()
+                self.tableWidget.insertRow(row)
+                cn_module_nodenum_Item = Header_Item_NodeNum(node_num)
+                visual_order.append(config['nodes'][node])
+                self.tableWidget.setVerticalHeaderItem(row, cn_module_nodenum_Item)
+
+            # Restore row order (important to do this LAST)
+            for i, visual_index in enumerate(visual_order):
+                self.tableWidget.verticalHeader().moveSection(self.tableWidget.verticalHeader().visualIndex(i), visual_index)
+            for _media_conv in _media_convs:
+                self.add_media_converter()
+                self.tableWidget.verticalHeader().moveSection(self.tableWidget.rowCount()-1, _media_conv)
+            self._site_loaded = True
 
             log.info(f"Configuration loaded from {filename}")
 
@@ -685,7 +705,8 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
 
         nodes, paths = scan_cn(_path)
 
-        self.tableWidget.setRowCount(len(nodes))
+        if not self._site_loaded:
+            self.tableWidget.setRowCount(len(nodes))
 
         #columns
         self.tableWidget.setColumnCount(len(LABELS))
@@ -714,11 +735,12 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
 
             self._workers[node_num] = cn_node_worker
 
-            cn_module_nodenum_Item = Header_Item_NodeNum(node_num)
-            self.tableWidget.setVerticalHeaderItem(row, cn_module_nodenum_Item)
+            if not self._site_loaded:
+                cn_module_nodenum_Item = Header_Item_NodeNum(node_num)
+                self.tableWidget.setVerticalHeaderItem(row, cn_module_nodenum_Item)
 
-            cn_module_serial_Item = QTableWidgetItem(str(cn_module_serial))
-            self.tableWidget.setItem(row, 0, cn_module_serial_Item)
+                cn_module_serial_Item = QTableWidgetItem(str(cn_module_serial))
+                self.tableWidget.setItem(row, 0, cn_module_serial_Item)
 
         self.tableWidget.load_configuration()
         self._app.instance().restoreOverrideCursor()

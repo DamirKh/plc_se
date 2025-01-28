@@ -38,7 +38,9 @@ class DraggableTableWidget(QtWidgets.QTableWidget):
         super().setColumnHidden(column, hide)
         if not hide and self._config:
             try:
-                super().setColumnWidth(column, self._config['column_widths'][column])
+                Width = self._config['column_widths'][column]
+                Width = 100 if Width == 0 else Width
+                super().setColumnWidth(column, Width)
             except:
                 pass
         self.save_configuration()
