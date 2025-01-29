@@ -6,13 +6,15 @@ import sys
 import time
 
 import json
+from fileinput import filename
 
 from PyQt6.QtCore import Qt, QTimer, pyqtSignal
 from PyQt6.QtCore import QSettings
 from PyQt6.QtGui import QCursor, QColor, QBrush, QFont
 from PyQt6 import QtWidgets, QtCore, QtGui
 from PyQt6.QtWidgets import QMainWindow, QApplication, QProgressDialog, QVBoxLayout, QMessageBox, QLabel, QDialog, \
-    QWidget, QTableWidgetItem, QTableWidget, QGridLayout, QGroupBox, QCheckBox, QLineEdit, QDialogButtonBox, QHeaderView
+    QWidget, QTableWidgetItem, QTableWidget, QGridLayout, QGroupBox, QCheckBox, QLineEdit, QDialogButtonBox, \
+    QHeaderView, QFileDialog
 
 from cn_diag_tool_ui import Ui_MainWindow
 from cndt_config_dialog import Ui_Dialog
@@ -461,7 +463,7 @@ class LogWindow(QDialog, GeometrySaver):
 
 
 class MyUpdateTimer(object):
-    def __init__(self, value: int = 999):
+    def __init__(self, value: int = 1000):
         self._value = value
 
     @property
@@ -530,13 +532,22 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
 
         self.tableWidget._config_file = user_data.get_user_data_path() / 'main_table.json'
 
+    @property
+    def config_file_path(self):
+        return self._config_file_path
+
+    @config_file_path.setter
+    def config_file_path(self, value: str):
+        self._config_file_path = value
+        self.setWindowTitle(f"ControlNet diagnostic tool  {value}")
+
     def non_fatal(self, message):
         self.statusBar().showMessage(message, 10000)
 
     def save_site_config(self, filename=None):
         """Saves the application configuration to a JSON file."""
 
-        filename = filename or self._config_file_path
+        filename = filename or self.config_file_path
         config = {}
 
         # confirmation on tab close
@@ -568,10 +579,25 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
         except (IOError, OSError) as e:
             log.error(f"Error saving configuration: {e}")
 
+    def save_site_config_as(self):
+        """Saves the application configuration to a user-specified JSON file."""
+        filename, _ = QFileDialog.getSaveFileName(
+            self,
+            "Save Site Configuration As...",
+            str(user_data.get_user_data_path()/'sites'),  # Default directory (empty string for user's home directory)
+            "JSON Files (*.json);;All Files (*)",  # Filter
+        )
+
+        if filename:  # Check if the user selected a file
+            if not filename.lower().endswith(".json"):
+                filename += ".json"  # Add .json extension if not present
+            self.save_site_config(filename=filename)
+            self.config_file_path = filename  # update path in-place for future 'save' calls
+
     def load_site_config(self, filename=None):
         """Loads the application configuration from a JSON file."""
 
-        filename = filename or self._config_file_path
+        filename = filename or self.config_file_path
 
         try:
             with open(filename, 'r') as f:
@@ -612,6 +638,19 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
         except json.JSONDecodeError as e:
             log.error(f"Error decoding JSON configuration: {e}")
 
+    def load_site_from_file(self):
+        """Load the application configuration from a user-specified JSON file."""
+        filename, _ = QFileDialog.getOpenFileName(
+            self,
+            "Load Site Configuration From...",
+            str(user_data.get_user_data_path()/'sites'),  # Default directory (empty string for user's home directory)
+            "JSON Files (*.json);;All Files (*)",  # Filter
+        )
+
+        if filename:  # Check if the user selected a file
+            self.load_site_config(filename=filename)
+            self.config_file_path = filename  # update path in-place for future 'save' calls
+
     def _worker_not_connected(self):
         self.lineEditConnectionPath.setEnabled(True)
         self.pushButtonConnect.setEnabled(True)
@@ -632,7 +671,9 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
         self.pushButtonConnect.clicked.connect(self.onButtonConnect)
         # self.pushButtonAddTab.clicked.connect(self.onAddTab)
         self.actionLoad.triggered.connect(self.load_site_config)
+        self.actionLoad_site.triggered.connect(self.load_site_from_file)
         self.actionSave.triggered.connect(self.save_site_config)
+        self.actionSave_as.triggered.connect(self.save_site_config_as)
         self.actionRead_Timer.triggered.connect(self.on_read_timer_conf)
         # self.actionEnable_writing_to_PLC.triggered.connect(self.on_write_enable)
         self.actionOpen_config_folder.triggered.connect(self.on_open_folder)
@@ -861,6 +902,7 @@ if __name__ == "__main__":
     log.info('Start application')
 
     config_dir_path = user_data.get_user_data_path()
+    sites_path = config_dir_path / 'sites'
     config_file_path = config_dir_path / 'config.json'
 
     Glob_settings = QSettings(user_data.Organisation, user_data.AppName)
@@ -869,6 +911,9 @@ if __name__ == "__main__":
     if not config_dir_path.exists():
         config_dir_path.mkdir(parents=True, exist_ok=True)
         log.info(f"Config dir created {config_dir_path}")
+    if not sites_path.exists():
+        sites_path.mkdir(parents=True, exist_ok=True)
+        log.info(f"sites dir created {sites_path}")
 
     app = QApplication(sys.argv)
 
