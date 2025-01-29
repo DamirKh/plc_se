@@ -102,7 +102,7 @@ LABELS = [
                ),
     HeaderData('channel_B_frame_error/s',
                comment='B err/s',
-               hint='Ошибки канала A в секунду',
+               hint='Ошибки канала B в секунду',
                longread="""Ошибки по каналу B за последнюю секунду""",
                ),
     HeaderData('selected_channel_frame_error',
