@@ -21,6 +21,10 @@ class PLCConnectionWorkerSignals(QObject):
 
 
 class PLCConnectionWorker(QThread):
+    tree_byte_counters = [
+        'good_frames_transmitted',
+        'good_frames_received',
+    ]
     def __init__(self, node_num: int, parent=None):  # Add parent for proper cleanup
         super().__init__(parent)
         self.node_num = node_num
@@ -88,6 +92,11 @@ class PLCConnectionWorker(QThread):
                                     increment = value - self._previous_counters.get(key,
                                                                                     value)  # Handle missing previous value
                                     rate = increment / time_delta if time_delta > 0 else 0  # Avoid division by zero
+                                    if rate < 0:  # counter overloaded
+                                        if key in PLCConnectionWorker.tree_byte_counters:
+                                            rate += 2**24
+                                        else:
+                                            rate += 2**8
                                     counters_with_rates[key + "/s"] = int(rate)  # Add increment per second
 
                                 except TypeError:  # Handle cases where counter values are not numeric

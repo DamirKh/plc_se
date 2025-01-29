@@ -533,7 +533,7 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
     def non_fatal(self, message):
         self.statusBar().showMessage(message, 10000)
 
-    def save_config(self, filename=None):
+    def save_site_config(self, filename=None):
         """Saves the application configuration to a JSON file."""
 
         filename = filename or self._config_file_path
@@ -568,7 +568,7 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
         except (IOError, OSError) as e:
             log.error(f"Error saving configuration: {e}")
 
-    def load_config(self, filename=None):
+    def load_site_config(self, filename=None):
         """Loads the application configuration from a JSON file."""
 
         filename = filename or self._config_file_path
@@ -631,8 +631,8 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
     def connectSignalsSlots(self):
         self.pushButtonConnect.clicked.connect(self.onButtonConnect)
         # self.pushButtonAddTab.clicked.connect(self.onAddTab)
-        self.actionLoad.triggered.connect(self.load_config)
-        self.actionSave.triggered.connect(self.save_config)
+        self.actionLoad.triggered.connect(self.load_site_config)
+        self.actionSave.triggered.connect(self.save_site_config)
         self.actionRead_Timer.triggered.connect(self.on_read_timer_conf)
         # self.actionEnable_writing_to_PLC.triggered.connect(self.on_write_enable)
         self.actionOpen_config_folder.triggered.connect(self.on_open_folder)
