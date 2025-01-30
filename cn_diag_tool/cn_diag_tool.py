@@ -740,10 +740,10 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
         self.MyCrossTable.show()
 
     def export_to(self):
-        if self._site_loaded and len(self._workers):
+        if len(self._workers):
             filename, _ = QFileDialog.getSaveFileName(
                 self,
-                "Save Site Configuration As...",
+                "Export data to...",
                 "",  # Default directory (empty string for user's home directory)
                 "XLSX Files (*.xlsx);;All Files (*)",  # Filter
             )
