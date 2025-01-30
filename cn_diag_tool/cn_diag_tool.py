@@ -624,6 +624,32 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
             plc_path = plc_settings.get('path', "")
             self.lineEditConnectionPath.setText(plc_path)
 
+            self.tableWidget.clearContents()
+            self.tableWidget.setRowCount(0)
+
+            for _node_num, worker in self._workers.items():
+                # assert worker is PLCConnectionWorker
+                worker.stop()
+            if len(self._workers):
+                progress = QProgressDialog("Please wait...", '', 0, 0, self)  # 0,0 for indeterminate progress
+                progress.setWindowModality(Qt.WindowModality.WindowModal)  # Make it blocking (optional)
+                progress.show()
+                QApplication.processEvents()  # Important to show the dialog before sleeping
+                t = QTimer()
+                t.setSingleShot(True)  # Run only once
+                # t.timeout.connect(self.finish_work)
+                t.start(2000)  # 2000 ms = 2 seconds
+                while t.isActive():
+                    QApplication.processEvents()
+                # Check if cancelled (if you made the dialog modal and added a cancel button)
+                if progress.wasCanceled():
+                    # Handle cancellation
+                    pass
+                self._workers = {}
+                progress.close()  # Close the dialog after completion
+
+            self.pushButtonConnect.setEnabled(True)
+
             # load nodes
             visual_order = []
             _media_convs = config['nodes'].pop(MEDIA_CONVERTER, [])
@@ -724,7 +750,6 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
     def on_write_enable(self, state):
         # print(f"Enable writing {state}")
         log.info(f"Write enabled = {state}")
-        self._worker.enable_writing = state
 
     def on_open_folder(self):
         directory_path = user_data.get_user_data_path()
