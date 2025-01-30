@@ -717,6 +717,7 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
         self.actionShow_log.triggered.connect(self.show_log)
         self.actionShow_CrossTable.triggered.connect(self.show_crosstable)
         self.actionTable_Config.triggered.connect(self.config_dialog)
+        self.actionExport_to_Excel.triggered.connect(self.export_to)
         self.tableWidget.rowsMoved.connect(self.sync_crosstable_rows)
 
     def config_dialog(self):
@@ -737,6 +738,27 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
     def show_crosstable(self):
         log.debug('Hit show crosstable')
         self.MyCrossTable.show()
+
+    def export_to(self):
+        if self._site_loaded and len(self._workers):
+            filename, _ = QFileDialog.getSaveFileName(
+                self,
+                "Save Site Configuration As...",
+                "",  # Default directory (empty string for user's home directory)
+                "XLSX Files (*.xlsx);;All Files (*)",  # Filter
+            )
+
+            if filename:  # Check if the user selected a file
+                if not filename.lower().endswith(".xlsx"):
+                    filename += ".xlsx"  # Add .xlsx extension if not present
+                if self.tableWidget.export_to_excel(filename=filename):  # if success
+                    QMessageBox.information(self, "Success Exporting Data",
+                                         f"Data exported to {filename}")
+                    pass
+                else:
+                    QMessageBox.critical(self, "Error Exporting Data",
+                                         f"Could not export data to {filename}:\n See log window for details")
+
 
     def add_media_converter(self):
         cn_media_converter_item = QTableWidgetItem(MEDIA_CONVERTER)

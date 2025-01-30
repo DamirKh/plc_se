@@ -85,6 +85,7 @@
     <addaction name="actionShow_CrossTable"/>
     <addaction name="actionOpen_config_folder"/>
     <addaction name="actionShow_log"/>
+    <addaction name="actionExport_to_Excel"/>
    </widget>
    <widget class="QMenu" name="menuConfig_2">
     <property name="title">
@@ -119,6 +120,7 @@
    <addaction name="separator"/>
    <addaction name="actionShow_log"/>
    <addaction name="actionTable_Config"/>
+   <addaction name="actionExport_to_Excel"/>
   </widget>
   <action name="actionSave">
    <property name="icon">
@@ -206,6 +208,14 @@
   <action name="actionAbout">
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="actionExport_to_Excel">
+   <property name="icon">
+    <iconset theme="x-office-document"/>
+   </property>
+   <property name="text">
+    <string>Export to Excel</string>
    </property>
   </action>
  </widget>

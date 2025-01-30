@@ -2,6 +2,7 @@ import json
 import  logging
 from PyQt6 import QtWidgets, QtCore, QtGui
 from PyQt6.QtCore import Qt, pyqtSignal
+import openpyxl
 
 log = logging.getLogger(__name__)
 
@@ -109,3 +110,33 @@ class DraggableTableWidget(QtWidgets.QTableWidget):
 
             self._config = config
         self._do_not_save = False
+
+    def export_to_excel(self, filename):
+        try:
+            workbook = openpyxl.Workbook()
+            sheet = workbook.active
+
+            # Copy headers (both horizontal and vertical)
+            for col in range(self.columnCount()):
+                header_item = self.horizontalHeaderItem(col)
+                if header_item:
+                    sheet.cell(row=1, column=col + 2, value=header_item.text()) # Offset by 1 for vertical header
+
+            for row in range(self.rowCount()):
+                vertical_header_item = self.verticalHeaderItem(row)
+                if vertical_header_item:
+                     sheet.cell(row=row + 2, column=1, value=vertical_header_item.text()) # Add vertical headers
+
+                # Copy data (offset columns by 1 to accommodate vertical header)
+                for col in range(self.columnCount()):
+                    item = self.item(row, col)
+                    if item:
+                        sheet.cell(row=row + 2, column=col + 2, value=item.text())
+
+            workbook.save(filename)
+            log.info(f"Table exported to {filename}")
+            return True
+
+        except Exception as e:
+            log.error(f"Error exporting to Excel: {e}")
+            return False

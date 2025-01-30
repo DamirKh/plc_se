@@ -98,12 +98,17 @@ class Ui_MainWindow(object):
         self.actionLoad_site.setObjectName("actionLoad_site")
         self.actionAbout = QtGui.QAction(parent=MainWindow)
         self.actionAbout.setObjectName("actionAbout")
+        self.actionExport_to_Excel = QtGui.QAction(parent=MainWindow)
+        icon = QtGui.QIcon.fromTheme("x-office-document")
+        self.actionExport_to_Excel.setIcon(icon)
+        self.actionExport_to_Excel.setObjectName("actionExport_to_Excel")
         self.menuConfig.addAction(self.actionLoad_site)
         self.menuConfig.addAction(self.actionSave)
         self.menuConfig.addAction(self.actionSave_as)
         self.menuConfig.addAction(self.actionShow_CrossTable)
         self.menuConfig.addAction(self.actionOpen_config_folder)
         self.menuConfig.addAction(self.actionShow_log)
+        self.menuConfig.addAction(self.actionExport_to_Excel)
         self.menuConfig_2.addAction(self.actionRead_Timer)
         self.menuConfig_2.addAction(self.actionEnable_writing_to_PLC)
         self.menuHelp.addAction(self.actionAbout)
@@ -115,6 +120,7 @@ class Ui_MainWindow(object):
         self.toolBar.addSeparator()
         self.toolBar.addAction(self.actionShow_log)
         self.toolBar.addAction(self.actionTable_Config)
+        self.toolBar.addAction(self.actionExport_to_Excel)
 
         self.retranslateUi(MainWindow)
         self.pushButtonAddMediaConverter.clicked.connect(MainWindow.add_media_converter) # type: ignore
@@ -141,4 +147,5 @@ class Ui_MainWindow(object):
         self.actionSave_as.setText(_translate("MainWindow", "Save as..."))
         self.actionLoad_site.setText(_translate("MainWindow", "Load site..."))
         self.actionAbout.setText(_translate("MainWindow", "About"))
+        self.actionExport_to_Excel.setText(_translate("MainWindow", "Export to Excel"))
 from DragTable import DraggableTableWidget
