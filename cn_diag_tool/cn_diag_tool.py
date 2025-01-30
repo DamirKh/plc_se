@@ -402,6 +402,7 @@ class CrossTableDialog(QDialog, floating_table_ui.Ui_Dialog, GeometrySaver):
             visual_index = from_table.verticalHeader().visualIndex(row)
             V_item = QTableWidgetItem(from_table.verticalHeaderItem(row).text())
             H_item = QTableWidgetItem(from_table.verticalHeaderItem(row).text())
+            self.tableWidget.setColumnWidth(row, 15)
             self.tableWidget.setVerticalHeaderItem(visual_index, V_item)
             self.tableWidget.setHorizontalHeaderItem(visual_index, H_item)
             if V_item.text() == MEDIA_CONVERTER:
@@ -462,25 +463,6 @@ class LogWindow(QDialog, GeometrySaver):
         self.hide()
 
 
-class MyUpdateTimer(object):
-    def __init__(self, value: int = 1000):
-        self._value = value
-
-    @property
-    def value(self):
-        return self._value
-
-    @value.setter
-    def value(self, new_val: int):
-        self._value = new_val
-
-    def set_value(self, new_value):
-        try:
-            self._value = int(new_value)
-        except Exception as e:
-            log.error(f"Error update timer: {e}")
-
-
 class HelperConfigDialog(QDialog, Ui_Dialog):
     def __init__(self, callback, timer_value, confirmation, parent=None):
         super().__init__(parent)
@@ -489,7 +471,6 @@ class HelperConfigDialog(QDialog, Ui_Dialog):
         self.connectSignalsSlots()
         self.spinBox.setValue(timer_value)
         self.checkBox.setChecked(confirmation)
-        # self.spinBox.value(timer_value)
 
     def connectSignalsSlots(self):
         self.spinBox.valueChanged.connect(self._callback)
@@ -508,9 +489,10 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
         self.logger_window = LogWindow(self)
         self.MyCrossTable = CrossTableDialog(parent=self)
         self.connectSignalsSlots()
-        self._config_file_path = config_file_path
-        self._update_timer = MyUpdateTimer()
-        self._confirm_on_tab_close = True
+        self._app_config_file_path = config_file_path
+        self._config_file_path = None
+        self._confirm_on_close = True
+        self._site_changed = False
         self._prev_update_time = time.monotonic_ns()
 
         self._app: QtWidgets.QApplication = QtWidgets.QApplication.instance()
@@ -527,9 +509,9 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
         # Create a timer for periodic LED blinkers
         self.led_blink_timer = QTimer(self)
         self.led_blink_timer.setSingleShot(False)
-        self.led_blink_timer.setInterval(LED_blink_period)
+        self.led_blink_timer.setInterval(300)
         self.led_blink_timer.timeout.connect(self.led_blinker)
-
+        self.load_app_config()
         self.tableWidget._config_file = user_data.get_user_data_path() / 'main_table.json'
 
     @property
@@ -548,13 +530,10 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
         """Saves the application configuration to a JSON file."""
 
         filename = filename or self.config_file_path
+        if not filename:
+            self.save_site_config_as()
+            return
         config = {}
-
-        # confirmation on tab close
-        config['Close_tab_confirm'] = self._confirm_on_tab_close
-
-        # timer setting
-        config['Timer'] = self._update_timer.value
 
         # CN Settings
         config['CN'] = {
@@ -576,36 +555,69 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
             with open(filename, 'w') as f:
                 json.dump(config, f, indent=4)  # Use indent for readability
             log.info(f"Configuration saved to {filename}")
+            self._site_changed = False
+            return True
         except (IOError, OSError) as e:
             log.error(f"Error saving configuration: {e}")
+            # Use a QMessageBox for error dialog:
+            QMessageBox.critical(self, "Error Saving Configuration",
+                                 f"Could not save configuration to {filename}:\n{e}")
+            return False
+
+    def save_app_config(self):
+        config = {}
+        # confirmation on tab close
+        config['Close_tab_confirm'] = self._confirm_on_close
+        # timer setting
+        config['Blinker'] = self.led_blink_timer.interval()
+        try:
+            with open(self._app_config_file_path, 'w') as f:
+                json.dump(config, f, indent=4)  # Use indent for readability
+            log.info(f'Application configuration saved to {self._app_config_file_path}')
+            return True
+        except (IOError, OSError) as e:
+            log.error(f"Error saving configuration: {e}")
+            return False
+
+    def load_app_config(self):
+        """Loads the application configuration from a JSON file."""
+        try:
+            with open(self._app_config_file_path, 'r') as f:
+                config: dict = json.load(f)
+                self._confirm_on_close = config.get('Close_tab_confirm', True)
+                self.led_blink_timer.setInterval(config.get('Blinker', LED_blink_period))
+            log.info(f'Application configuration loaded from {self._app_config_file_path}')
+            return True
+        except FileNotFoundError:
+            log.warning("Configuration file not found. Using defaults.")
+        except json.JSONDecodeError as e:
+            log.error(f"Error decoding JSON configuration: {e}")
+        self._confirm_on_close = True
+        self.led_blink_timer.setInterval(LED_blink_period)
 
     def save_site_config_as(self):
         """Saves the application configuration to a user-specified JSON file."""
+        prposed_filename_or_dir = self.config_file_path or user_data.get_user_data_path()/'sites'
         filename, _ = QFileDialog.getSaveFileName(
             self,
             "Save Site Configuration As...",
-            str(user_data.get_user_data_path()/'sites'),  # Default directory (empty string for user's home directory)
+            str(prposed_filename_or_dir),  # Default directory (empty string for user's home directory)
             "JSON Files (*.json);;All Files (*)",  # Filter
         )
 
         if filename:  # Check if the user selected a file
             if not filename.lower().endswith(".json"):
                 filename += ".json"  # Add .json extension if not present
-            self.save_site_config(filename=filename)
-            self.config_file_path = filename  # update path in-place for future 'save' calls
+            if self.save_site_config(filename=filename): # if success
+                self.config_file_path = filename  # update path in-place for future 'save' calls
+            else:
+                pass
 
-    def load_site_config(self, filename=None):
+    def load_site_config(self, site_conf_filename):
         """Loads the application configuration from a JSON file."""
-
-        filename = filename or self.config_file_path
-
         try:
-            with open(filename, 'r') as f:
+            with open(site_conf_filename, 'r') as f:
                 config = json.load(f)
-            # confirmation
-            self._confirm_on_tab_close = config.get('Close_tab_confirm', True)
-            # load_timer_settings
-            self._update_timer.value = config.get('Timer', 1000)
 
             # Load ControlNet Settings
             plc_settings = config.get('CN', {})  # Get CN settings with fallback
@@ -630,8 +642,8 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
                 self.add_media_converter()
                 self.tableWidget.verticalHeader().moveSection(self.tableWidget.rowCount()-1, _media_conv)
             self._site_loaded = True
-
-            log.info(f"Configuration loaded from {filename}")
+            self._site_changed = False
+            log.info(f"Configuration loaded from {site_conf_filename}")
 
         except FileNotFoundError:
             log.warning("Configuration file not found. Using defaults.")
@@ -648,7 +660,7 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
         )
 
         if filename:  # Check if the user selected a file
-            self.load_site_config(filename=filename)
+            self.load_site_config(site_conf_filename=filename)
             self.config_file_path = filename  # update path in-place for future 'save' calls
 
     def _worker_not_connected(self):
@@ -669,8 +681,7 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
 
     def connectSignalsSlots(self):
         self.pushButtonConnect.clicked.connect(self.onButtonConnect)
-        # self.pushButtonAddTab.clicked.connect(self.onAddTab)
-        self.actionLoad.triggered.connect(self.load_site_config)
+        self.actionAbout.triggered.connect(self.about)
         self.actionLoad_site.triggered.connect(self.load_site_from_file)
         self.actionSave.triggered.connect(self.save_site_config)
         self.actionSave_as.triggered.connect(self.save_site_config_as)
@@ -689,6 +700,7 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
 
     def sync_crosstable_rows(self):
         """Synchronizes the row order of the CrossTableDialog with self.tableWidget."""
+        self._site_changed = True
         if self.MyCrossTable is not None:  # Check if dialog was created.
             log.debug(f'Synchronise table')
             self.MyCrossTable.fill_table(self.tableWidget)
@@ -707,6 +719,7 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
         new_row = self.tableWidget.rowCount()
         self.tableWidget.insertRow(new_row)
         self.tableWidget.setVerticalHeaderItem(new_row, cn_media_converter_item)
+        self._site_changed = True
 
     def on_write_enable(self, state):
         # print(f"Enable writing {state}")
@@ -726,16 +739,16 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
             QMessageBox.warning(self, "Error", f"Unsupported platform: {sys.platform}")
 
     def on_read_timer_conf(self):
-        old_value = self._update_timer.value
+        old_value = self.led_blink_timer.interval()
         dialog = HelperConfigDialog(parent=self,
-                                    timer_value=self._update_timer.value,
-                                    confirmation=self._confirm_on_tab_close,
-                                    callback=self._update_timer.set_value)
+                                    timer_value=self.led_blink_timer.interval(),
+                                    confirmation=self._confirm_on_close,
+                                    callback=self.led_blink_timer.setInterval)
         result = dialog.exec()
         if result:
-            self._confirm_on_tab_close = dialog.checkBox.checkState().value == QtCore.Qt.CheckState.Checked.value
+            self._confirm_on_close = dialog.checkBox.checkState().value == QtCore.Qt.CheckState.Checked.value
         else:
-            self._update_timer.value = old_value
+            self.led_blink_timer.setInterval(old_value)
 
     def onButtonConnect(self):
         self.lineEditConnectionPath.setEnabled(False)
@@ -895,28 +908,57 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
                         new_item = QTableWidgetItem(str_value)
                         self.tableWidget.setItem(row, col, new_item)
 
+    def closeEvent(self, event):
+        self.save_app_config()
+        if self._confirm_on_close and self._site_changed:
+            reply = QMessageBox.question(self, 'Message',
+                "Are you sure to quit? Any unsaved changes will be lost.", QMessageBox.StandardButton.Yes |
+                QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
+
+            if reply == QMessageBox.StandardButton.Yes:
+                event.accept()
+            else:
+                event.ignore()
+        else:
+            event.accept()
+
+    def about(self):
+        QMessageBox.about(
+            self,
+            "About ControlNet Diagnostic Tool",
+            f"<p>By using ControlNet Diagnostic Tool</p>"
+            f"<p>you can significantly improve the troubleshooting speed of ControlNet networks.</p>"
+            f"<p> - PyQt6</p>"
+            f"<p> - Qt Designer6</p>"
+            f"<p> - Python3.12</p>"
+            f"System: {os.name}"
+        )
+
+    def about_pyqt(self):
+        QMessageBox.aboutQt(self)
+
 
 if __name__ == "__main__":
     log = logging.getLogger(__name__)
     log.setLevel(logging.DEBUG)
     log.info('Start application')
 
-    config_dir_path = user_data.get_user_data_path()
-    sites_path = config_dir_path / 'sites'
-    config_file_path = config_dir_path / 'config.json'
+    app_config_dir_path = user_data.get_user_data_path()
+    sites_path = app_config_dir_path / 'sites'
+    app_config_file_path = app_config_dir_path / 'config.json'
 
     Glob_settings = QSettings(user_data.Organisation, user_data.AppName)
 
     # Create the directory if it doesn't exist
-    if not config_dir_path.exists():
-        config_dir_path.mkdir(parents=True, exist_ok=True)
-        log.info(f"Config dir created {config_dir_path}")
+    if not app_config_dir_path.exists():
+        app_config_dir_path.mkdir(parents=True, exist_ok=True)
+        log.info(f"Config dir created {app_config_dir_path}")
     if not sites_path.exists():
         sites_path.mkdir(parents=True, exist_ok=True)
         log.info(f"sites dir created {sites_path}")
 
     app = QApplication(sys.argv)
 
-    win = DiagWindow(config_file_path)
+    win = DiagWindow(app_config_file_path)
     win.show()
     sys.exit(app.exec())

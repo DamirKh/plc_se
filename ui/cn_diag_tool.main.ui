@@ -79,7 +79,6 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionLoad"/>
     <addaction name="actionLoad_site"/>
     <addaction name="actionSave"/>
     <addaction name="actionSave_as"/>
@@ -94,8 +93,15 @@
     <addaction name="actionRead_Timer"/>
     <addaction name="actionEnable_writing_to_PLC"/>
    </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionAbout"/>
+   </widget>
    <addaction name="menuConfig"/>
    <addaction name="menuConfig_2"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
@@ -108,25 +114,16 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionLoad"/>
+   <addaction name="actionLoad_site"/>
    <addaction name="actionShow_CrossTable"/>
    <addaction name="separator"/>
    <addaction name="actionShow_log"/>
    <addaction name="actionTable_Config"/>
   </widget>
-  <action name="actionLoad">
-   <property name="icon">
-    <iconset theme="document-open">
-     <normaloff>.</normaloff>.</iconset>
-   </property>
-   <property name="text">
-    <string>Load</string>
-   </property>
-  </action>
   <action name="actionSave">
    <property name="icon">
     <iconset theme="document-save">
-     <normaloff>.</normaloff>.</iconset>
+     <normaloff>../../../.designer/backup</normaloff>../../../.designer/backup</iconset>
    </property>
    <property name="text">
     <string>Save</string>
@@ -135,10 +132,10 @@
   <action name="actionRead_Timer">
    <property name="icon">
     <iconset theme="media-playlist-repeat">
-     <normaloff>.</normaloff>.</iconset>
+     <normaloff>../../../.designer/backup</normaloff>../../../.designer/backup</iconset>
    </property>
    <property name="text">
-    <string>Read Timer</string>
+    <string>LED blink timer</string>
    </property>
   </action>
   <action name="actionEnable_writing_to_PLC">
@@ -147,10 +144,10 @@
    </property>
    <property name="icon">
     <iconset theme="emblem-downloads">
-     <normaloff>.</normaloff>.</iconset>
+     <normaloff>../../../.designer/backup</normaloff>../../../.designer/backup</iconset>
    </property>
    <property name="text">
-    <string>Enable writing to PLC</string>
+    <string>Enable counters drop</string>
    </property>
   </action>
   <action name="actionOpen_config_folder">
@@ -161,7 +158,7 @@
   <action name="actionShow_log">
    <property name="icon">
     <iconset theme="utilities-system-monitor">
-     <normaloff>.</normaloff>.</iconset>
+     <normaloff>../../../.designer/backup</normaloff>../../../.designer/backup</iconset>
    </property>
    <property name="text">
     <string>Show log</string>
@@ -170,7 +167,7 @@
   <action name="actionShow_CrossTable">
    <property name="icon">
     <iconset theme="x-office-spreadsheet">
-     <normaloff>.</normaloff>.</iconset>
+     <normaloff>../../../.designer/backup</normaloff>../../../.designer/backup</iconset>
    </property>
    <property name="text">
     <string>Show CrossTable</string>
@@ -179,7 +176,7 @@
   <action name="actionTable_Config">
    <property name="icon">
     <iconset theme="preferences-desktop">
-     <normaloff>.</normaloff>.</iconset>
+     <normaloff>../../../.designer/backup</normaloff>../../../.designer/backup</iconset>
    </property>
    <property name="text">
     <string>Table Config</string>
@@ -190,7 +187,8 @@
   </action>
   <action name="actionSave_as">
    <property name="icon">
-    <iconset theme="document-save-as"/>
+    <iconset theme="document-save-as">
+     <normaloff>../../../.designer/backup</normaloff>../../../.designer/backup</iconset>
    </property>
    <property name="text">
     <string>Save as...</string>
@@ -198,10 +196,16 @@
   </action>
   <action name="actionLoad_site">
    <property name="icon">
-    <iconset theme="document-open-recent"/>
+    <iconset theme="document-open">
+     <normaloff>../../../.designer/backup</normaloff>../../../.designer/backup</iconset>
    </property>
    <property name="text">
     <string>Load site...</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
    </property>
   </action>
  </widget>
