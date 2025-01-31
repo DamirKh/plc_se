@@ -20,6 +20,7 @@ from cn_diag_tool_ui import Ui_MainWindow
 from cndt_config_dialog import Ui_Dialog
 from Plc_connection_worker import PLCConnectionWorker
 from cn_lib import scan_cn
+from pycomm3.exceptions import CommError, RequestError
 
 import floating_table_ui
 
@@ -362,6 +363,20 @@ class QTextEditLogger(logging.Handler, QtCore.QObject):
         self.appendPlainText.emit(msg)
 
 
+class StatusBarLogger(logging.Handler, QtCore.QObject):
+    updateStatusBar = QtCore.pyqtSignal(str)
+
+    def __init__(self, statusbar, level = logging.INFO):
+        logging.Handler.__init__(self, level)
+        QtCore.QObject.__init__(self)
+        self.statusbar = statusbar
+        self.updateStatusBar.connect(self.statusbar.showMessage)
+
+    def emit(self, record):
+        msg = self.format(record)
+        self.updateStatusBar.emit(msg)
+
+
 class Header_Item_NodeNum(QTableWidgetItem):
     def __init__(self, node_num: int, *args, **kwargs):
         color = QColor('yellow')
@@ -482,6 +497,13 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, config_file_path, parent=None):
         super().__init__(parent)
         self.setupUi(self)
+        self.statusbar.showMessage("Start application")
+
+        self.my_status_updater = StatusBarLogger(self.statusbar)
+        self.my_status_updater.setFormatter(
+            logging.Formatter('%(message)s')
+        )
+        logging.getLogger().addHandler(self.my_status_updater)
 
         # self.tableWidget = DraggableTableWidget(parent=self.centralwidget)
         # self.tableWidget.setObjectName("tableWidget")
@@ -759,7 +781,6 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
                     QMessageBox.critical(self, "Error Exporting Data",
                                          f"Could not export data to {filename}:\n See log window for details")
 
-
     def add_media_converter(self):
         cn_media_converter_item = QTableWidgetItem(MEDIA_CONVERTER)
 
@@ -804,8 +825,23 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
 
         self._app.instance().setOverrideCursor(QCursor(Qt.CursorShape.BusyCursor))
 
-        nodes, paths = scan_cn(_path)
-
+        try:
+            nodes, paths = scan_cn(_path, p=log.debug)
+        except (TimeoutError, CommError) as e:
+            self._app.instance().restoreOverrideCursor()
+            log.critical(f"Error Scanning ControlNet (no route to IP address?) {e}")
+            QMessageBox.critical(self, "Error Scanning ControlNet",
+                                 f"Error occurs while scanning ControlNet!\n(no route to IP address?)\n\n"
+                                 f"{e}")
+            return
+        except RequestError as e:
+            self._app.instance().restoreOverrideCursor()
+            log.critical(f"Error Scanning ControlNet (bad connection path?) {e}")
+            QMessageBox.critical(self, "Error Scanning ControlNet",
+                                 f"Error occurs while scanning ControlNet!\n(bad connection path?)\n\n"
+                                 f"{e}")
+            return
+        log.info(f'ControlNet [{_path}] scan complete')
         if not self._site_loaded:
             self.tableWidget.setRowCount(len(nodes))
 
@@ -941,6 +977,7 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
                         else:  # Loop completed without finding the header
                             raise ValueError(f"Header '{key}' not found")
                     except ValueError as e:
+                        log.debug(f'{e}')
                         # print(f"Warning: {e}")
                         continue
 

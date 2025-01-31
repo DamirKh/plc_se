@@ -78,7 +78,7 @@ class DraggableTableWidget(QtWidgets.QTableWidget):
         try:
             with open(fname, 'r') as f:
                 config = json.load(f)
-                log.info(f"Table configuration loaded from {fname}")
+                log.debug(f"Table configuration loaded from {fname}")
         except FileNotFoundError:  # Handle file not found (maybe first time running).
             log.warning(f"Config file '{fname}' not found. Using default settings.")
             self._do_not_save = False
