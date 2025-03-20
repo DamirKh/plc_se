@@ -16,8 +16,11 @@ from PyQt6.QtWidgets import QMainWindow, QApplication, QProgressDialog, QVBoxLay
     QWidget, QTableWidgetItem, QTableWidget, QGridLayout, QGroupBox, QCheckBox, QLineEdit, QDialogButtonBox, \
     QHeaderView, QFileDialog
 
+import user_data
+import ver
+
 #https://stackoverflow.com/a/66104687/8124158
-QtCore.QDir.addSearchPath('asset', 'asset/')
+QtCore.QDir.addSearchPath('asset', user_data.asset_dir)
 
 from cn_diag_tool_ui import Ui_MainWindow
 from cndt_config_dialog import Ui_Dialog
@@ -27,8 +30,7 @@ from pycomm3.exceptions import CommError, RequestError
 
 import floating_table_ui
 
-import user_data
-import ver
+
 
 # from DragTable import DraggableTableWidget
 
