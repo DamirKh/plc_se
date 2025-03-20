@@ -8,5 +8,12 @@ pyuic6 -o comissioning_helper/helper_window_ui.py ui/commisionning_helper.ui
 pyuic6 -o comissioning_helper/config_helper_dialog_ui.py ui/config_helper.ui
 pyuic6 -o comissioning_helper/form_tab2_widget_ui.py ui/FormTab2.ui
 # ControlNet debug tool
-pyuic6 -o cn_diag_tool/cn_diag_tool_ui.py ui/cn_diag_tool.main.ui
-pyuic6 -o cn_diag_tool/floating_table_ui.py ui/FloatingTable.ui
+pyuic6 -o cn_diag_tool/cn_diag_tool_ui.tmp ui/cn_diag_tool.main.ui
+sed 's/:\/asset\//asset:/g' cn_diag_tool/cn_diag_tool_ui.tmp > cn_diag_tool/cn_diag_tool_ui.py
+rm cn_diag_tool/cn_diag_tool_ui.tmp
+
+pyuic6 -o cn_diag_tool/floating_table_ui.py.tmp ui/FloatingTable.ui
+sed 's/:\/asset\//asset:/g' cn_diag_tool/floating_table_ui.py.tmp > cn_diag_tool/floating_table_ui.py
+rm cn_diag_tool/floating_table_ui.py.tmp
+
+#rcc -g python -o resources.py asset/res.qrc

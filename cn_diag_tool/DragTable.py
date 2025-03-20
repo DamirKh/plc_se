@@ -120,18 +120,21 @@ class DraggableTableWidget(QtWidgets.QTableWidget):
             for col in range(self.columnCount()):
                 header_item = self.horizontalHeaderItem(col)
                 if header_item:
-                    sheet.cell(row=1, column=col + 2, value=header_item.text()) # Offset by 1 for vertical header
+                    visual_column_num = self.horizontalHeader().visualIndex(col)
+                    sheet.cell(row=1, column=visual_column_num+2, value=header_item.text()) # Offset by 1 for vertical header
 
             for row in range(self.rowCount()):
                 vertical_header_item = self.verticalHeaderItem(row)
+                visual_row_num = self.verticalHeader().visualIndex(row)
                 if vertical_header_item:
-                     sheet.cell(row=row + 2, column=1, value=vertical_header_item.text()) # Add vertical headers
+                     sheet.cell(row=visual_row_num + 2, column=1, value=vertical_header_item.text()) # Add vertical headers
 
                 # Copy data (offset columns by 1 to accommodate vertical header)
                 for col in range(self.columnCount()):
                     item = self.item(row, col)
+                    visual_column_num = self.horizontalHeader().visualIndex(col)
                     if item:
-                        sheet.cell(row=row + 2, column=col + 2, value=item.text())
+                        sheet.cell(row=visual_row_num + 2, column=visual_column_num + 2, value=item.text())
 
             workbook.save(filename)
             log.info(f"Table exported to {filename}")

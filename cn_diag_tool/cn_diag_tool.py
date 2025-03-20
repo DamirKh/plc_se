@@ -16,6 +16,9 @@ from PyQt6.QtWidgets import QMainWindow, QApplication, QProgressDialog, QVBoxLay
     QWidget, QTableWidgetItem, QTableWidget, QGridLayout, QGroupBox, QCheckBox, QLineEdit, QDialogButtonBox, \
     QHeaderView, QFileDialog
 
+#https://stackoverflow.com/a/66104687/8124158
+QtCore.QDir.addSearchPath('asset', 'asset/')
+
 from cn_diag_tool_ui import Ui_MainWindow
 from cndt_config_dialog import Ui_Dialog
 from Plc_connection_worker import PLCConnectionWorker
@@ -1042,6 +1045,7 @@ if __name__ == "__main__":
         log.info(f"sites dir created {sites_path}")
 
     app = QApplication(sys.argv)
+    app.setWindowIcon(QtGui.QIcon(os.path.join(user_data.asset_dir, 'cn_media.ico')))
 
     win = DiagWindow(app_config_file_path)
     win.show()

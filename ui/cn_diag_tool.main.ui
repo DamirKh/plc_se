@@ -39,7 +39,7 @@
          <bool>true</bool>
         </property>
         <property name="text">
-         <string>Scan</string>
+         <string>Go!</string>
         </property>
        </widget>
       </item>
@@ -125,7 +125,7 @@
   <action name="actionSave">
    <property name="icon">
     <iconset theme="document-save">
-     <normaloff>../../../.designer/backup</normaloff>../../../.designer/backup</iconset>
+     <normaloff>../../../../.designer/backup</normaloff>../../../../.designer/backup</iconset>
    </property>
    <property name="text">
     <string>Save</string>
@@ -134,7 +134,7 @@
   <action name="actionRead_Timer">
    <property name="icon">
     <iconset theme="media-playlist-repeat">
-     <normaloff>../../../.designer/backup</normaloff>../../../.designer/backup</iconset>
+     <normaloff>../../../../.designer/backup</normaloff>../../../../.designer/backup</iconset>
    </property>
    <property name="text">
     <string>LED blink timer</string>
@@ -146,7 +146,7 @@
    </property>
    <property name="icon">
     <iconset theme="emblem-downloads">
-     <normaloff>../../../.designer/backup</normaloff>../../../.designer/backup</iconset>
+     <normaloff>../../../../.designer/backup</normaloff>../../../../.designer/backup</iconset>
    </property>
    <property name="text">
     <string>Enable counters drop</string>
@@ -159,8 +159,8 @@
   </action>
   <action name="actionShow_log">
    <property name="icon">
-    <iconset theme="utilities-system-monitor">
-     <normaloff>../../../.designer/backup</normaloff>../../../.designer/backup</iconset>
+    <iconset resource="../cn_diag_tool/asset/asset.qrc">
+     <normaloff>:/asset/script-text.png</normaloff>:/asset/script-text.png</iconset>
    </property>
    <property name="text">
     <string>Show log</string>
@@ -168,8 +168,8 @@
   </action>
   <action name="actionShow_CrossTable">
    <property name="icon">
-    <iconset theme="x-office-spreadsheet">
-     <normaloff>../../../.designer/backup</normaloff>../../../.designer/backup</iconset>
+    <iconset resource="../cn_diag_tool/asset/asset.qrc">
+     <normaloff>:/asset/table.png</normaloff>:/asset/table.png</iconset>
    </property>
    <property name="text">
     <string>Show CrossTable</string>
@@ -177,8 +177,8 @@
   </action>
   <action name="actionTable_Config">
    <property name="icon">
-    <iconset theme="preferences-desktop">
-     <normaloff>../../../.designer/backup</normaloff>../../../.designer/backup</iconset>
+    <iconset resource="../cn_diag_tool/asset/asset.qrc">
+     <normaloff>:/asset/equalizer--pencil.png</normaloff>:/asset/equalizer--pencil.png</iconset>
    </property>
    <property name="text">
     <string>Table Config</string>
@@ -190,7 +190,7 @@
   <action name="actionSave_as">
    <property name="icon">
     <iconset theme="document-save-as">
-     <normaloff>../../../.designer/backup</normaloff>../../../.designer/backup</iconset>
+     <normaloff>../../../../.designer/backup</normaloff>../../../../.designer/backup</iconset>
    </property>
    <property name="text">
     <string>Save as...</string>
@@ -198,8 +198,8 @@
   </action>
   <action name="actionLoad_site">
    <property name="icon">
-    <iconset theme="document-open">
-     <normaloff>../../../.designer/backup</normaloff>../../../.designer/backup</iconset>
+    <iconset resource="../cn_diag_tool/asset/asset.qrc">
+     <normaloff>:/asset/drive-upload.png</normaloff>:/asset/drive-upload.png</iconset>
    </property>
    <property name="text">
     <string>Load site...</string>
@@ -212,7 +212,8 @@
   </action>
   <action name="actionExport_to_Excel">
    <property name="icon">
-    <iconset theme="x-office-document"/>
+    <iconset resource="../cn_diag_tool/asset/asset.qrc">
+     <normaloff>:/asset/report-excel.png</normaloff>:/asset/report-excel.png</iconset>
    </property>
    <property name="text">
     <string>Export to Excel</string>
@@ -226,7 +227,9 @@
    <header>DragTable.h</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="../cn_diag_tool/asset/asset.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>pushButtonAddMediaConverter</sender>
