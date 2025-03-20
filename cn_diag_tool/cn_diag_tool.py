@@ -825,8 +825,9 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
             self.led_blink_timer.setInterval(old_value)
 
     def onButtonConnect(self):
-        self.lineEditConnectionPath.setEnabled(False)
-        self.pushButtonConnect.setEnabled(False)
+        widgets_to_disable =  self.lineEditConnectionPath, self.pushButtonConnect
+        for _w in widgets_to_disable:
+            _w.setEnabled(False)
         _path = self.lineEditConnectionPath.text()
 
         self._app.instance().setOverrideCursor(QCursor(Qt.CursorShape.BusyCursor))
@@ -839,6 +840,8 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
             QMessageBox.critical(self, "Error Scanning ControlNet",
                                  f"Error occurs while scanning ControlNet!\n(no route to IP address?)\n\n"
                                  f"{e}")
+            for _w in widgets_to_disable:
+                _w.setEnabled(True)  # restore widgets
             return
         except RequestError as e:
             self._app.instance().restoreOverrideCursor()
@@ -846,6 +849,8 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
             QMessageBox.critical(self, "Error Scanning ControlNet",
                                  f"Error occurs while scanning ControlNet!\n(bad connection path?)\n\n"
                                  f"{e}")
+            for _w in widgets_to_disable:
+                _w.setEnabled(True)  # restore widgets
             return
         log.info(f'ControlNet [{_path}] scan complete')
         if not self._site_loaded:
@@ -955,6 +960,9 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
                                 cell_item.setData(Qt.ItemDataRole.DecorationRole, GREEN)
                         case 7:
                             cell_item.setData(Qt.ItemDataRole.DecorationRole, RED)
+
+        running_count = sum(worker.isRunning() for worker in self._workers.values())
+        self.status_bar_label_1.setText((f"Number of running workers: {running_count}"))
 
     def update_diag_data(self, node_num, diag_data: dict):
         """Updates diagnostic data in the table for the specified node using a dictionary.
