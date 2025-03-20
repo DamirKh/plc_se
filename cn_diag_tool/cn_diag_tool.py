@@ -28,6 +28,7 @@ from pycomm3.exceptions import CommError, RequestError
 import floating_table_ui
 
 import user_data
+import ver
 
 # from DragTable import DraggableTableWidget
 
@@ -1013,11 +1014,13 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
         QMessageBox.about(
             self,
             "About ControlNet Diagnostic Tool",
+            f"<p>Version: {ver.strng}</p>"
             f"<p>By using ControlNet Diagnostic Tool</p>"
             f"<p>you can significantly improve the troubleshooting speed of ControlNet networks.</p>"
             f"<p> - PyQt6</p>"
             f"<p> - Qt Designer6</p>"
             f"<p> - Python3.12</p>"
+            f"<p> Fugue Icons (C) 2013 Yusuke Kamiyamane. All rights reserved.</p>"
             f"System: {os.name}"
         )
 
