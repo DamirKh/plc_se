@@ -5,7 +5,7 @@ a = Analysis(
     ['cn_diag_tool\\cn_diag_tool.py'],
     pathex=[],
     binaries=[],
-    datas=[('cn_diag_tool\\asset\\', '.')],
+    datas=[('cn_diag_tool\\asset\\', 'asset')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
