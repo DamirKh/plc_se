@@ -163,6 +163,18 @@ cn_diag_counters = {
     "name": 'CN_DIAG_COUNTERS'
 }
 
+cn_diag_counters_reset = {
+    "service": Services.reset,
+    "class_code": 0x00f0,
+    "instance": 0x1,
+    "attribute": 0x82,
+    "connected": True,
+    "unconnected_send": True,
+    # "data_type": cn_diag_counters,
+    "route_path": True,
+    "name": 'CN_DIAG_COUNTERS_RESET'
+}
+
 cn_diag_LED = {
     "service": Services.get_attribute_single,
     "class_code": 0x00f0,

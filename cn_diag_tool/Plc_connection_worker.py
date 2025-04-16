@@ -27,6 +27,7 @@ class PLCConnectionWorker(QThread):
         self._path = ''
         self.signals = PLCConnectionWorkerSignals()
         self._stop_event = False  # Use an event for stopping
+        self._reset_counters_event = False
         self._loop_time = 1.0  # Default loop time
         self.enable_writing = False
         self._mutex = QMutex()  # Mutex for thread safety during writes
@@ -45,6 +46,9 @@ class PLCConnectionWorker(QThread):
     def stop(self):
         self._stop_event = True
 
+    def reset_counters(self):
+        self._reset_counters_event = True
+
     def update_cn_counters(self, new_counters):  # write_cn_counter implementation
         self._mutex.lock()
         self.cn_counters = new_counters.copy()  # Thread-safe copy
@@ -52,11 +56,17 @@ class PLCConnectionWorker(QThread):
 
     def run(self):
         self._stop_event = False
+        self._reset_counters_event = False
         try:
             with pycomm3.CIPDriver(self._path) as driver:  # Context manager for cleanup
                 while not self._stop_event:
                     start_time = time.monotonic()  # Use monotonic time for accurate timing
                     try:
+                        if self._reset_counters_event:
+                            resetting_result = driver.generic_message(**cip_request.cn_diag_counters_reset)
+                            print(resetting_result)
+                            time.sleep(1)
+
                         ## ControlNet module counters
                         CN_counters_raw = driver.generic_message(**cip_request.cn_diag_counters)
                         if CN_counters_raw.error:
