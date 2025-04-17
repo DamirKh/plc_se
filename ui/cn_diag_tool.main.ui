@@ -93,12 +93,15 @@
     </property>
     <addaction name="actionRead_Timer"/>
     <addaction name="actionEnable_writing_to_PLC"/>
+    <addaction name="actionDrop_Counters"/>
+    <addaction name="actionAck"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
      <string>Help</string>
     </property>
     <addaction name="actionAbout"/>
+    <addaction name="actionChangelog"/>
    </widget>
    <addaction name="menuConfig"/>
    <addaction name="menuConfig_2"/>
@@ -116,6 +119,8 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionLoad_site"/>
+   <addaction name="actionDrop_Counters"/>
+   <addaction name="actionAck"/>
    <addaction name="actionShow_CrossTable"/>
    <addaction name="separator"/>
    <addaction name="actionShow_log"/>
@@ -149,7 +154,7 @@
      <normaloff>../../../../.designer/backup</normaloff>../../../../.designer/backup</iconset>
    </property>
    <property name="text">
-    <string>Enable counters drop</string>
+    <string>Enable counters reset</string>
    </property>
   </action>
   <action name="actionOpen_config_folder">
@@ -206,6 +211,10 @@
    </property>
   </action>
   <action name="actionAbout">
+   <property name="icon">
+    <iconset resource="../cn_diag_tool/asset/asset.qrc">
+     <normaloff>:/asset/question-button.png</normaloff>:/asset/question-button.png</iconset>
+   </property>
    <property name="text">
     <string>About</string>
    </property>
@@ -217,6 +226,39 @@
    </property>
    <property name="text">
     <string>Export to Excel</string>
+   </property>
+  </action>
+  <action name="actionDrop_Counters">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../cn_diag_tool/asset/asset.qrc">
+     <normaloff>:/asset/counter-reset.png</normaloff>:/asset/counter-reset.png</iconset>
+   </property>
+   <property name="text">
+    <string>Reset Counters</string>
+   </property>
+  </action>
+  <action name="actionChangelog">
+   <property name="icon">
+    <iconset resource="../cn_diag_tool/asset/asset.qrc">
+     <normaloff>:/asset/information-button.png</normaloff>:/asset/information-button.png</iconset>
+   </property>
+   <property name="text">
+    <string>Changelog</string>
+   </property>
+  </action>
+  <action name="actionAck">
+   <property name="icon">
+    <iconset resource="../cn_diag_tool/asset/asset.qrc">
+     <normaloff>:/asset/exclamation-circle.png</normaloff>:/asset/exclamation-circle.png</iconset>
+   </property>
+   <property name="text">
+    <string>Acknowledge</string>
+   </property>
+   <property name="toolTip">
+    <string>Reset Yellow marks</string>
    </property>
   </action>
  </widget>

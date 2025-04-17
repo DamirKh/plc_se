@@ -126,7 +126,7 @@ cn_diag_counters = {
     "class_code": 0x00f0,
     "instance": 0x1,
     "attribute": 0x82,
-    "connected": True,
+    "connected": False,
     "unconnected_send": True,
     # "data_type": cn_diag_counters,
     "route_path": True,
@@ -134,11 +134,11 @@ cn_diag_counters = {
 }
 
 cn_diag_counters_reset = {
-    "service": Services.reset,
+    "service": Services.read_tag,
     "class_code": 0x00f0,
     "instance": 0x1,
     "attribute": 0x82,
-    "connected": True,
+    "connected": False,
     "unconnected_send": True,
     # "data_type": cn_diag_counters,
     "route_path": True,

@@ -44,6 +44,7 @@ MEDIA_CONVERTER = '=/='
 RED = QColor('red')
 GREEN = QColor('green')
 GREY = QColor('grey')
+YELLOW = QColor('yellow')
 LED_blink_period = 300  # msec
 TICK_TACK = False
 My_ROLE = QtCore.Qt.ItemDataRole.UserRole + 1
@@ -51,12 +52,13 @@ HOR_HEADER_FONT = QFont()
 
 
 class HeaderData(object):
-    def __init__(self, sid: str, comment: str = '', hint: str = '', longread: str = '', size: int = None):
+    def __init__(self, sid: str, comment: str = '', hint: str = '', longread: str = '', size: int = None, woc: bool = False):
         self.sid = sid
         self.comment = comment
         self.hint = hint
         self.longread = longread
         self.size = size
+        self.woc = woc  # warning on change
 
 
 LABELS = [
@@ -82,19 +84,12 @@ LABELS = [
                longread="""Состояние индикатора на модуле. 
                Состояния при которых нет связи с модулем не могут быть отображены, потому что нет связи с модулем""",
                ),
-    # '#err_0',
-    # '#err_1',
-    # '#err_2',
-    # '#err_3',
-    # '#err_4',
-    # '#err_5',
-    # '#err_6',
-    # '#err_7',
     HeaderData('channel_A_frame_error',
                comment='A err',
                hint='Счетчик ошибок канала A',
                longread="Счетчик ошибок канала A\n"
                         "8 bit",
+               woc=True,
                ),
     HeaderData('channel_A_frame_error/s',
                comment='A err/s',
@@ -106,6 +101,7 @@ LABELS = [
                hint='Счетчик ошибок канала B',
                longread="""Счетчик ошибок канала B 
                (8bit)""",
+               woc=True,
                ),
     HeaderData('channel_B_frame_error/s',
                comment='B err/s',
@@ -117,6 +113,7 @@ LABELS = [
                hint='Счетчик ошибок по активному каналу',
                longread="Счетчик ошибок по активному каналу\n"
                         "8 bit",
+               woc=True,
                ),
     HeaderData('selected_channel_frame_error/s',
                comment='Err/s',
@@ -149,8 +146,8 @@ LABELS = [
                comment='⇞',
                hint='Счетчик оборыва передачи',
                longread="""Счетчик обрыва передачи\n8 бит""",
+               woc=True,
                ),
-
     HeaderData('good_frames_received',
                comment='⇓',
                hint='Счетчик успешно принятых кадров',
@@ -172,6 +169,7 @@ LABELS = [
                hint='Счетчик обнаружения шума',
                longread="""Счетчик обнаружения шума на линии
                (8 бит)""",
+               woc=True,
                ),
     HeaderData('noise_hits/s',
                comment='∿/с',
@@ -184,6 +182,7 @@ LABELS = [
                hint='',
                longread="Счетчик обнаруженных столкновений\n"
                         "8 бит",
+               woc=True,
                ),
     HeaderData('collisions/s',
                comment='⇆/с',
@@ -192,75 +191,84 @@ LABELS = [
                ),
 
     HeaderData('highwaters',
-               comment='Перегрузка',
-               hint='',
-               longread="""""",
+               comment='OVRL',
+               hint='Перегрузка',
+               longread="""Перегрузка""",
+               woc=True,
                ),
     HeaderData('nut_overloads',
-               comment='NUT перегрузка',
-               hint='',
-               longread="""""",
+               comment='NUT\nOVRL',
+               hint='NUT перегрузка',
+               longread="""NUT перегрузка""",
                ),
     HeaderData('nut_overloads/s',
-               comment='NUT перегрузка/c',
-               hint='',
-               longread="""""",
+               comment='NUT\nOVRL/c',
+               hint='NUT перегрузка/с',
+               longread="""Приращение счетчика 'NUT перегрузка' за последнюю секунду""",
+               woc=True,
                ),
     HeaderData('slot_overloads',
-               comment='slot_overloads',
-               hint='',
+               comment='SLOT\nOVRL',
+               hint='slot_overloads',
                longread="""""",
+               woc=True,
                ),
     HeaderData('slot_overloads/s',
-               comment='slot_overloads/s',
-               hint='',
-               longread="""""",
+               comment='SLOT\nOVRL/s',
+               hint='slot_overloads',
+               longread="""Приращение счетчика 'slot_overloads' за последнюю секунду """,
                ),
     HeaderData('blockages',
-               comment='blockages',
+               comment='BLOCK',
                hint='',
                longread="""""",
+               woc=True,
                ),
     HeaderData('blockages/s',
-               comment='blockages/s',
+               comment='BLOCK\n    /s',
                hint='',
                longread="""""",
                ),
     HeaderData('non_concurrence',
-               comment='non_concurrence',
-               hint='',
+               comment='NON\nCNCR',
+               hint='non concurrence',
                longread="""""",
+               woc=True,
                ),
     HeaderData('non_concurrence/s',
-               comment='non_concurrence/s',
+               comment='NON\nCNCR/s',
                hint='',
                longread="""""",
                ),
     # rarely used
     HeaderData('lonely_counter',
-               comment='lonely_counter',
-               hint='',
-               longread="""""",
+               comment='LNLY',
+               hint='lonely_counter',
+               longread="""lonely_counter""",
+               woc=True,
                ),
     HeaderData('duplicate_node',
-               comment='duplicate_node',
-               hint='',
-               longread="""""",
+               comment='DUP',
+               hint='duplicate_node',
+               longread="""duplicate_node""",
+               woc=True,
                ),
     HeaderData('mod_mac_id',
-               comment='mod_mac_id',
-               hint='',
-               longread="""""",
+               comment='MOD\nMAC',
+               hint='mod_mac_id',
+               longread="""mod_mac_id""",
                ),
     HeaderData('non_lowman_mods',
-               comment='non_lowman_mods',
-               hint='',
-               longread="""""",
+               comment='nLOW\nmods',
+               hint='non_lowman_mods',
+               longread="""non_lowman_mods""",
+               woc=True,
                ),
     HeaderData('rogue_count',
-               comment='rogue_count',
-               hint='',
+               comment='ROG',
+               hint='rogue_count',
                longread="""""",
+               woc=True,
                ),
 ]
 
@@ -542,6 +550,10 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
         self.load_app_config()
         self.tableWidget._config_file = user_data.get_user_data_path() / 'main_table.json'
 
+        with open( os.path.join(user_data.basedir, 'changelog.txt')) as chlog:
+            self.changelog = chlog.read()
+
+
     @property
     def config_file_path(self):
         return self._config_file_path
@@ -721,11 +733,13 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
         self.lineEditConnectionPath.setEnabled(True)
         self.pushButtonConnect.setEnabled(True)
         self.pushButtonAddTab.setEnabled(False)
+        self.actionDrop_Counters.setEnabled(False)
 
     def _worker_connected(self):
         self.lineEditConnectionPath.setEnabled(False)
         self.pushButtonConnect.setEnabled(False)
         self.pushButtonAddTab.setEnabled(True)
+        self.actionDrop_Counters.setEnabled(True)
 
     def on_connection_lost(self, text_error: str):
         log.error(f"Lost connection {text_error}")
@@ -740,13 +754,30 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
         self.actionSave.triggered.connect(self.save_site_config)
         self.actionSave_as.triggered.connect(self.save_site_config_as)
         self.actionRead_Timer.triggered.connect(self.on_read_timer_conf)
-        # self.actionEnable_writing_to_PLC.triggered.connect(self.on_write_enable)
+        self.actionEnable_writing_to_PLC.triggered.connect(self.on_write_enable)
         self.actionOpen_config_folder.triggered.connect(self.on_open_folder)
         self.actionShow_log.triggered.connect(self.show_log)
         self.actionShow_CrossTable.triggered.connect(self.show_crosstable)
         self.actionTable_Config.triggered.connect(self.config_dialog)
         self.actionExport_to_Excel.triggered.connect(self.export_to)
         self.tableWidget.rowsMoved.connect(self.sync_crosstable_rows)
+        self.actionDrop_Counters.triggered.connect(self.onResetCounters)
+        self.actionChangelog.triggered.connect(self.onChangeLog)
+        self.actionAck.triggered.connect(self.acknowledge)
+
+    def onChangeLog(self):
+        QMessageBox.information(
+            self,
+            'Changelog',
+            self.changelog,
+        )
+
+    def onResetCounters(self):
+        log.debug("Reset counters")
+        for node_num, w in self._workers.items():
+            assert isinstance(w, PLCConnectionWorker)
+            w.reset_counters()
+            log.debug(f'reset [{node_num:02}]')
 
     def config_dialog(self):
         log.debug("Open config dialog")
@@ -797,8 +828,8 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
         self._site_changed = True
 
     def on_write_enable(self, state):
-        # print(f"Enable writing {state}")
-        log.info(f"Write enabled = {state}")
+        log.debug(f"Resseting counters enabled = {state}")
+        self.actionDrop_Counters.setEnabled(state and self.running_count>0)
 
     def on_open_folder(self):
         directory_path = user_data.get_user_data_path()
@@ -961,8 +992,24 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
                         case 7:
                             cell_item.setData(Qt.ItemDataRole.DecorationRole, RED)
 
-        running_count = sum(worker.isRunning() for worker in self._workers.values())
-        self.status_bar_label_1.setText((f"Number of running workers: {running_count}"))
+        self.status_bar_label_1.setText((f"Number of running workers: {self.running_count}"))
+
+    @property
+    def running_count(self):
+        return sum(worker.isRunning() for worker in self._workers.values())
+
+    def acknowledge(self):
+        """reset warnings"""
+        for col in range(self.tableWidget.columnCount()):
+            horisontal_header_item = self.tableWidget.horizontalHeaderItem(col)
+            column_data: HeaderData = self.tableWidget.horizontalHeaderItem(col).data(My_ROLE)
+            if horisontal_header_item and column_data.woc:
+                for row in range(self.tableWidget.rowCount()):
+                    vertical_header_item = self.tableWidget.verticalHeaderItem(row)
+                    if vertical_header_item and vertical_header_item.text() == MEDIA_CONVERTER:
+                        continue
+                    cell_item = self.tableWidget.item(row, col)
+                    cell_item.setData(Qt.ItemDataRole.DecorationRole, None)
 
     def update_diag_data(self, node_num, diag_data: dict):
         """Updates diagnostic data in the table for the specified node using a dictionary.
@@ -976,6 +1023,7 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
         for row in range(self.tableWidget.rowCount()):
             item = self.tableWidget.verticalHeaderItem(row)
             if item and item.text() == f'[{node_num:02}]':
+                # found row with current node number
                 for key, value in diag_data.items():
                     if key not in DiagWindow.labels:
                         continue
@@ -992,7 +1040,6 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
                             raise ValueError(f"Header '{key}' not found")
                     except ValueError as e:
                         log.debug(f'{e}')
-                        # print(f"Warning: {e}")
                         continue
 
                     try:
@@ -1001,6 +1048,11 @@ class DiagWindow(QMainWindow, Ui_MainWindow):
                         str_value = f"Error: {e}"
                     item = self.tableWidget.item(row, col)
                     if item:
+                        if column_data.woc:
+                            # warning sign if value changed
+                            old_text = item.text()
+                            if old_text!=str_value:
+                                item.setData(Qt.ItemDataRole.DecorationRole, YELLOW)
                         item.setText(str_value)
                     else:
                         new_item = QTableWidgetItem(str_value)

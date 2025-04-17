@@ -1,0 +1,2 @@
+0.8 Reset counters button added
+0.9 Acknowledgment added
