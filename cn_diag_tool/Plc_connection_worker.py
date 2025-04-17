@@ -67,12 +67,13 @@ class PLCConnectionWorker(QThread):
                     start_time = time.monotonic()  # Use monotonic time for accurate timing
                     try:
                         if self._reset_counters_event:
-                            resetting_result = driver.generic_message(**cip_request.cn_diag_counters_reset)
-                            print(resetting_result)
-                            time.sleep(1)
+                            req = cip_request.cn_diag_counters_reset
+                            self._reset_counters_event = False
+                        else:
+                            req = cip_request.cn_diag_counters
 
                         ## ControlNet module counters
-                        CN_counters_raw = driver.generic_message(**cip_request.cn_diag_counters)
+                        CN_counters_raw = driver.generic_message(**req)
                         if CN_counters_raw.error:
                             self.signals.non_fatal_error.emit(self.node_num, str(CN_counters_raw.error))
                         else:
@@ -103,9 +104,7 @@ class PLCConnectionWorker(QThread):
                                                                                     value)  # Handle missing previous value
                                     rate = increment / time_delta if time_delta > 0 else 0  # Avoid division by zero
                                     if rate < 0:  # counter overloaded
-                                        if key in PLCConnectionWorker.tree_byte_counters:
-                                            rate += 2**24
-                                        else:
+                                        if key not in PLCConnectionWorker.tree_byte_counters:
                                             rate += 2**8
                                     counters_with_rates[key + "/s"] = int(rate)  # Add increment per second
 

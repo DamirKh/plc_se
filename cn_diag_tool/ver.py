@@ -1,3 +1,3 @@
 major = 0
-minor = 7
+minor = 8
 strng = f"{major}.{minor}"
